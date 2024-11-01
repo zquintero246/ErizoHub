@@ -60,11 +60,7 @@ fun AppContent() {
         isLoading = false
     }
 
-    if (!isLoading) {
-        ManejarLogin()
-    } else {
-        LoadingScreenContent()
-    }
+    LoadingScreenContent()
 }
 
 

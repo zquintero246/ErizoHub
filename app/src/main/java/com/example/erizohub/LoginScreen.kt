@@ -33,8 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
-@Composable
-fun ManejarLogin() {
+/*fun ManejarLogin() {
     var mostrarPantalla by remember { mutableStateOf("preLogin") }
 
     when (mostrarPantalla) {
@@ -51,7 +50,7 @@ fun ManejarLogin() {
             IniciarSesion()
         }
     }
-}
+}*/
 
 
 @Composable

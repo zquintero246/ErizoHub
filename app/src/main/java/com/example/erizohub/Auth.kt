@@ -26,6 +26,10 @@ fun loginUser(email: String, password: String) {
         }
 }
 
+
+
+
+
 fun saveUserData(userId: String, username: String, email: String) {
     val user = hashMapOf(
         "username" to username,

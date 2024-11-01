@@ -195,12 +195,7 @@ fun IniciarSesion(){
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,){
 
-            Button(onClick = {
-                loginUser(username, password)
-                auth.currentUser?.let { user ->
-                    saveUserData(user.uid, username, email)
-                }
-            },
+            Button(onClick = { loginUser(email, password) },
                 modifier = Modifier
                     .padding(top = 29.dp)
                     .width(367.dp)
@@ -333,11 +328,9 @@ fun Registrarse(){
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,){
 
-            Button(onClick = {
-                    registerUser(email, password)
-                    auth.currentUser?.let { user ->
-                        saveUserData(user.uid, username, email)
-                    }
+            Button( onClick = {
+                registerUser(email, password)
+                auth.currentUser?.let { user -> saveUserData(user.uid, username, email) }
             },
                 modifier = Modifier
                     .padding(top = 29.dp)

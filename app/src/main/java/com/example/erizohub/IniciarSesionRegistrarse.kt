@@ -4,18 +4,21 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -30,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
 
 
@@ -211,12 +215,12 @@ fun Registrarse(){
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
-        Column(modifier = Modifier
+        Box(modifier = Modifier
             .background(color = ErizoHubTheme.Colors.background)
             .fillMaxWidth()
+            .zIndex(1f)
             .height(300.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom
+            contentAlignment = Alignment.BottomCenter
         ) {
             Text(
                 text = "Registrarse",
@@ -226,10 +230,11 @@ fun Registrarse(){
                 color = ErizoHubTheme.Colors.primary
             )
         }
+
+
         Column (modifier = Modifier
             .fillMaxWidth()
             .width(648.dp)
-            .clip(RoundedCornerShape(topEndPercent = 40, topStartPercent = 40))
             .padding(top = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(23.dp)

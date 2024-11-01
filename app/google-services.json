@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "207834759420",
+    "project_id": "erizohub-efa02",
+    "storage_bucket": "erizohub-efa02.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207834759420:android:4cdd2b74bc470be05a1779",
+        "android_client_info": {
+          "package_name": "com.example.erizohub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCR1kcAw0pxDea9wJHQ5bYl6-8tC02CKas"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

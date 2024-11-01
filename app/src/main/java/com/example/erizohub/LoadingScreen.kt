@@ -39,7 +39,7 @@ class ErizoHubTheme {
     object Colors {
         val background = Color(4285465817)
         val primary = Color(4294092619)
-        val textField = Color(4293256163)
+        val textField = Color(0xFFE5E3E3)
         val textFieldText = Color(4291545802)
     }
     object Fonts {

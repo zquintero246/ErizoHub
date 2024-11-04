@@ -1,5 +1,6 @@
 package com.example.erizohub
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -27,11 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +44,8 @@ fun Registrarse(navController: NavController){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
 
     Column (modifier = Modifier
         .fillMaxSize(),
@@ -142,6 +148,16 @@ fun Registrarse(navController: NavController){
             horizontalAlignment = Alignment.CenterHorizontally,){
 
             Button( onClick = {
+                val db = Firebase.firestore
+                val newUser = User(
+                    username,
+                    email,
+                    password
+                )
+
+                db.collection("Users").add(newUser)
+                Toast.makeText(context, "Se guardo correctamente",Toast.LENGTH_SHORT).show()
+                navController.navigate("home")
 
             },
                 modifier = Modifier

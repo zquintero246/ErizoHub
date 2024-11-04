@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.example.erizohub" />
-                  <option name="mobileSdkAppId" value="1:207834759420:android:4cdd2b74bc470be05a1779" />
-                  <option name="projectId" value="erizohub-efa02" />
-                  <option name="projectNumber" value="207834759420" />
+                  <option name="mobileSdkAppId" value="1:1062910711869:android:10155b0941ada0c0567254" />
+                  <option name="projectId" value="erizohub-74ce8" />
+                  <option name="projectNumber" value="1062910711869" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

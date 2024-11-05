@@ -31,30 +31,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 
-/*fun ManejarLogin() {
-    var mostrarPantalla by remember { mutableStateOf("preLogin") }
-
-    when (mostrarPantalla) {
-        "preLogin" -> {
-            PreLogin(
-                onButtonClickIniciar = { mostrarPantalla = "inicioSesion" },
-                onButtonClickRegistrarse = { mostrarPantalla = "register" }
-            )
-        }
-        "register" -> {
-            Registrarse()
-        }
-        "inicioSesion" -> {
-            IniciarSesion()
-        }
-    }
-}*/
 
 
 @Composable
-fun PreLogin(onButtonClickIniciar: () -> Unit, onButtonClickRegistrarse: () -> Unit) {
+fun PreLogin(navController: NavController, onButtonClickIniciar: () -> Unit, onButtonClickRegistrarse: () -> Unit) {
     var visible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {

@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
 import loginUser
@@ -105,6 +102,7 @@ fun IniciarSesion(navController: NavController){
 
 
     Column (modifier = Modifier
+        .background(color = ErizoHubTheme.Colors.background)
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
@@ -126,7 +124,7 @@ fun IniciarSesion(navController: NavController){
         Column (modifier = Modifier
             .fillMaxWidth()
             .width(648.dp)
-            .clip(RoundedCornerShape(topEndPercent = 40, topStartPercent = 40))
+            .background(Color.White, shape = RoundedCornerShape(topStart=30.dp,topEnd=30.dp))
             .padding(top = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(23.dp)
@@ -175,7 +173,7 @@ fun IniciarSesion(navController: NavController){
                     .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
             )
         }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
+        Row(modifier = Modifier.fillMaxWidth().background(Color.White), horizontalArrangement = Arrangement.End){
             Button(onClick = {}, modifier = Modifier
                 .width(250.dp)
                 .height(40.dp)
@@ -192,6 +190,7 @@ fun IniciarSesion(navController: NavController){
             }
         }
         Column(modifier = Modifier
+            .background(Color.White)
             .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,){

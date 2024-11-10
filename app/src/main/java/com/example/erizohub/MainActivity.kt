@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -36,7 +38,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             ErizoHubTheme(){
                 val myNavcontroller = rememberNavController()
-                var selectItem by remember { mutableStateOf(0) }
+                var selectItem by remember {
+                    mutableStateOf(0)
+                }
 
                 Scaffold(bottomBar = {
                     NavigationBar {

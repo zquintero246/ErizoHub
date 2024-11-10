@@ -1,9 +1,6 @@
 package com.example.erizohub
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,29 +12,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.erizohub.ui.theme.ErizoHubTheme
+import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.delay
 
-class AuthActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ErizoHubTheme {
-                AppContent()
-            }
-        }
-    }
-}
+
 
 object ErizoHubTheme {
     object Colors {
@@ -54,36 +39,15 @@ object ErizoHubTheme {
     }
 }
 
-@Composable
-fun AppContent() {
-    val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        startDestination = "loading"
-    ) {
-        composable("loading") {
-            LoadingScreenContent(navController)
-        }
-        composable("prelogin") {
-            PreLogin(
-                navController = navController,
-                onButtonClickIniciar = { navController.navigate("login") },
-                onButtonClickRegistrarse = { navController.navigate("register") }
-            )
-        }
-        composable("login") {
-            IniciarSesion(navController)
-        }
-        composable("register") {
-            Registrarse(navController)
-        }
-    }
-}
 
 @Composable
 fun LoadingScreenContent(navController: NavController) {
     var visible by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    FirebaseApp.initializeApp(context)
+
 
     LaunchedEffect(Unit) {
         visible = true

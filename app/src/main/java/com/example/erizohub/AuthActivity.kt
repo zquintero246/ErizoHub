@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,19 +25,17 @@ class AuthActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize Firebase and set up UI
         initializeFirebase {
             auth = FirebaseAuth.getInstance()
 
-            // Configure Google Sign-In
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id)) // Replace with your client ID
+                .requestIdToken("1062910711869-votj7v51p2ifg35a94lkk97abbp1n047.apps.googleusercontent.com")
                 .requestEmail()
                 .build()
 
+
             googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-            // Set up navigation and UI
             setContent {
                 val myController = rememberNavController()
 
@@ -60,10 +57,11 @@ class AuthActivity : ComponentActivity() {
                         IniciarSesion(myController)
                     }
                     composable("register") {
-                        Registrarse(myController)
+                        Registrarse(myController, this@AuthActivity)
                     }
                 }
             }
+
         }
     }
 
@@ -97,7 +95,7 @@ class AuthActivity : ComponentActivity() {
     }
 
 
-    private fun signInWithGoogle() {
+    fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
         googleSignInLauncher.launch(signInIntent)
     }

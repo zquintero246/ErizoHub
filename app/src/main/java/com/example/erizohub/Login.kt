@@ -52,10 +52,10 @@ fun DividerLogin(modifier: Modifier) {
 fun ButtonGoogleFacebook(
     text: String,
     logoResId: Int,
-    onClickAction: () -> Unit // Pass the action to execute on click
+    onClickAction: () -> Unit
 ) {
     Button(
-        onClick = { onClickAction() }, // Call the provided action when clicked
+        onClick = { onClickAction() },
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.White
         ),

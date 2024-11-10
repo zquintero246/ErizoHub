@@ -39,7 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Registrarse(navController: NavController){
+fun Registrarse(navController: NavController, authActivity: AuthActivity) {
     var emailinput by remember { mutableStateOf("") }
     var nameUserinput by remember { mutableStateOf("") }
     var profilepictureinput by remember { mutableStateOf("https://i.pinimg.com/736x/d7/49/10/d74910bede462ec2c81f40da876d6f1a.jpg") }
@@ -48,8 +48,8 @@ fun Registrarse(navController: NavController){
     var registerError by remember { mutableStateOf<String?>(null) }
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
-
     val context = LocalContext.current
+
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -251,9 +251,9 @@ fun Registrarse(navController: NavController){
                     ButtonGoogleFacebook(
                         text = "Continuar con Google",
                         logoResId = R.drawable.arrow_icon,
-                        onClickAction = { AuthActivity.signInWithGoogle() }
+                        onClickAction = { authActivity.signInWithGoogle() }
                     )
-                    ButtonGoogleFacebook( "Continuar con Facebook", R.drawable.arrow_icon)
+                    //ButtonGoogleFacebook( "Continuar con Facebook", R.drawable.arrow_icon)
                 }
             }
     }

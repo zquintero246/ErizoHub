@@ -12,7 +12,12 @@
           "package_name": "com.example.erizohub"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1062910711869-votj7v51p2ifg35a94lkk97abbp1n047.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAkOs4iUGhvdjB8XW4SEMzWgBR8NiE7jhQ"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1062910711869-votj7v51p2ifg35a94lkk97abbp1n047.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

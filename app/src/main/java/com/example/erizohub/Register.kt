@@ -1,9 +1,6 @@
 package com.example.erizohub
 
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -35,16 +32,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -262,9 +252,5 @@ fun Registrarse(navController: NavController){
                     ButtonGoogleFacebook( "Continuar con Facebook", R.drawable.arrow_icon)
                 }
             }
-
-
-
-
     }
 }

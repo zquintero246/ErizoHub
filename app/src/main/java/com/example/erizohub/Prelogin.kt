@@ -33,9 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-
-
-
 @Composable
 fun PreLogin(navController: NavController, onButtonClickIniciar: () -> Unit, onButtonClickRegistrarse: () -> Unit) {
     var visible by remember { mutableStateOf(false) }

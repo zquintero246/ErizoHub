@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
-import loginUser
+
 
 
 @Composable
@@ -49,9 +49,13 @@ fun DividerLogin(modifier: Modifier) {
 
 
 @Composable
-fun ButtonGoogleFacebook(text: String, logoResId: Int) {
+fun ButtonGoogleFacebook(
+    text: String,
+    logoResId: Int,
+    onClickAction: () -> Unit // Pass the action to execute on click
+) {
     Button(
-        onClick = {  },
+        onClick = { onClickAction() }, // Call the provided action when clicked
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.White
         ),
@@ -76,9 +80,10 @@ fun ButtonGoogleFacebook(text: String, logoResId: Int) {
             text = text,
             color = Color.Black,
             fontSize = 15.sp,
-            modifier = Modifier.weight(1f).padding(start = 40.dp),
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 40.dp),
         )
-
 
         Image(
             painter = painterResource(id = R.drawable.arrow_icon),
@@ -89,6 +94,7 @@ fun ButtonGoogleFacebook(text: String, logoResId: Int) {
         )
     }
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -195,7 +201,7 @@ fun IniciarSesion(navController: NavController){
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,){
 
-            Button(onClick = { loginUser(email, password) },
+            Button(onClick = { },
                 modifier = Modifier
                     .padding(top = 29.dp)
                     .width(367.dp)

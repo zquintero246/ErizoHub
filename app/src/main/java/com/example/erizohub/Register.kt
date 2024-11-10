@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -34,18 +35,26 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Registrarse(navController: NavController){
-    var email by remember { mutableStateOf("") }
+    var emailinput by remember { mutableStateOf("") }
+    var nameUserinput by remember { mutableStateOf("") }
+    var profilepictureinput by remember { mutableStateOf("https://i.pinimg.com/736x/d7/49/10/d74910bede462ec2c81f40da876d6f1a.jpg") }
     var password by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
+    var passwordConfirmation by remember { mutableStateOf("") }
+    var registerError by remember { mutableStateOf<String?>(null) }
+    val auth = FirebaseAuth.getInstance()
+    val db = FirebaseFirestore.getInstance()
+
     val context = LocalContext.current
 
-    Column (modifier = Modifier
+    Column(modifier = Modifier
         .fillMaxSize()
         .background(color = ErizoHubTheme.Colors.background),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -79,8 +88,8 @@ fun Registrarse(navController: NavController){
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = ErizoHubTheme.Colors.textField,
                     ),
-                    value = username,
-                    onValueChange = {username = it},
+                    value = nameUserinput,
+                    onValueChange = {nameUserinput = it},
                     label = { Text("Nombre de usuario",
                         color = ErizoHubTheme.Colors.textFieldText,
                         fontFamily = customFontFamily,
@@ -101,10 +110,32 @@ fun Registrarse(navController: NavController){
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = ErizoHubTheme.Colors.textField,
                     ),
-                    value = email,
-                    onValueChange = {email = it},
+                    value = emailinput,
+                    onValueChange = {emailinput = it},
                     label = {
-                        Text("Correo unab",
+                        Text("Correo",
+                            color = ErizoHubTheme.Colors.textFieldText,
+                            fontFamily = customFontFamily,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            fontSize = 10.sp
+                        )
+                    },
+                    modifier = Modifier
+                        .height(61.dp)
+                        .width(367.dp)
+                        .clip(RoundedCornerShape(50.dp))
+                        .background(color = ErizoHubTheme.Colors.textField)
+                        .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+                )
+
+                TextField(
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = ErizoHubTheme.Colors.textField,
+                    ),
+                    value = profilepictureinput,
+                    onValueChange = {profilepictureinput = it},
+                    label = {
+                        Text("url de la foto de perfil",
                             color = ErizoHubTheme.Colors.textFieldText,
                             fontFamily = customFontFamily,
                             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -141,6 +172,29 @@ fun Registrarse(navController: NavController){
                         .background(color = ErizoHubTheme.Colors.textField)
                         .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
                 )
+
+
+                TextField(
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = ErizoHubTheme.Colors.textField,
+                    ),
+                    value = passwordConfirmation,
+                    onValueChange = {passwordConfirmation = it},
+                    label = {
+                        Text("Confirmacion de contraseña",
+                            color = ErizoHubTheme.Colors.textFieldText,
+                            fontFamily = customFontFamily,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            fontSize = 10.sp
+                        )
+                    },
+                    modifier = Modifier
+                        .height(61.dp)
+                        .width(367.dp)
+                        .clip(RoundedCornerShape(50.dp))
+                        .background(color = ErizoHubTheme.Colors.textField)
+                        .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+                )
             }
             Column(modifier = Modifier
                 .fillMaxSize()
@@ -148,17 +202,36 @@ fun Registrarse(navController: NavController){
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally,){
 
-                Button( onClick = {
-                    val db = Firebase.firestore
-                    val newUser = User(
-                        username,
-                        email,
-                        password
-                    )
+                Button( onClick = {if (nameUserinput.isEmpty()
+                    || emailinput.isEmpty() || profilepictureinput.isEmpty()|| password.isEmpty()|| passwordConfirmation.isEmpty()){
+                    Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()
+                }else{
+                    if (password == passwordConfirmation) {
+                        registerError = null
 
-                    db.collection("Users").add(newUser)
-                    Toast.makeText(context, "Se guardo correctamente",Toast.LENGTH_SHORT).show()
-                    navController.navigate("home")
+                        auth.createUserWithEmailAndPassword(emailinput, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Guardar datos en Firestore
+                                    val user = auth.currentUser
+                                    val newUser = User (
+                                        userName = nameUserinput,
+                                        emailc = emailinput,
+                                        profilePictureUrl = profilepictureinput,
+                                        )
+                                    db.collection("users").document(user!!.uid).set(newUser)
+                                    Toast.makeText(context, "Se guardo correctamente",Toast.LENGTH_SHORT).show()
+                                    navController.navigate("login")
+                                } else {
+                                    Toast.makeText(context, "Error al registrar usuario",Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    } else {
+                        registerError = "Las contraseñas no coinciden"
+                    }
+
+                }
+
 
                 },
                     modifier = Modifier

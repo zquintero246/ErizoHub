@@ -17,11 +17,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 
-@Preview(showBackground = true)
+
 @Composable
-fun HomeScreen(){
+fun HomeScreen(navController: NavController){
     val emprendimiento1 = Emprendimiento(
         "Emprendimiento x",
         "Mi emprendimiento se tratatatatattatatatatata",

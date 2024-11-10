@@ -1,5 +1,8 @@
 package com.example.erizohub
 
+import android.app.Activity
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,12 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
-
+import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
@@ -100,11 +104,13 @@ fun ButtonGoogleFacebook(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IniciarSesion(navController: NavController){
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var emailInput by remember { mutableStateOf("") }
+    var passwordInput by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
 
+    val context = LocalContext.current
 
+    val auth = FirebaseAuth.getInstance()
 
 
     Column (modifier = Modifier
@@ -139,9 +145,9 @@ fun IniciarSesion(navController: NavController){
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = ErizoHubTheme.Colors.textField,
                 ),
-                value = username,
-                onValueChange = {username = it},
-                label = { Text("Nombre de usuario",
+                value = emailInput,
+                onValueChange = {emailInput = it},
+                label = { Text("email",
                     color = ErizoHubTheme.Colors.textFieldText,
                     fontFamily = customFontFamily,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -161,8 +167,8 @@ fun IniciarSesion(navController: NavController){
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = ErizoHubTheme.Colors.textField,
                 ),
-                value = password,
-                onValueChange = {password = it},
+                value = passwordInput,
+                onValueChange = {passwordInput = it},
                 label = {
                     Text("Contraseña",
                         color = ErizoHubTheme.Colors.textFieldText,
@@ -201,7 +207,23 @@ fun IniciarSesion(navController: NavController){
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,){
 
-            Button(onClick = { },
+            Button(onClick = {
+                if (emailInput.isEmpty() || passwordInput.isEmpty()) {
+                    Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()
+                } else {
+                    auth.signInWithEmailAndPassword(emailInput, passwordInput)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Iniciar MainActivity tras inicio de sesión exitoso
+                                val intent = Intent(context, MainActivity::class.java)
+                                context.startActivity(intent)
+                                (context as Activity).finish() // Cierra AuthActivity
+                            } else {
+                                Toast.makeText(context, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                }
+            },
                 modifier = Modifier
                     .padding(top = 29.dp)
                     .width(367.dp)

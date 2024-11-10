@@ -219,8 +219,8 @@ fun IniciarSesion(navController: NavController){
             }
             DividerLogin(Modifier)
             Column{
-                ButtonGoogleFacebook( "Continuar con Google", R.drawable.arrow_icon)
-                ButtonGoogleFacebook( "Continuar con Facebook", R.drawable.arrow_icon)
+//                ButtonGoogleFacebook( "Continuar con Google", R.drawable.arrow_icon)
+//                ButtonGoogleFacebook( "Continuar con Facebook", R.drawable.arrow_icon)
             }
         }
     }

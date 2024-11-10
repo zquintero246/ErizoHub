@@ -60,7 +60,7 @@ class AuthActivity : ComponentActivity() {
                         IniciarSesion(myController)
                     }
                     composable("register") {
-                        Registrarse(myController, this@AuthActivity)
+                        Registrarse(myController)
                     }
                 }
             }
@@ -73,13 +73,6 @@ class AuthActivity : ComponentActivity() {
         }
     }
 
-    // Launch Google Sign-In intent
-    private fun signInWithGoogle() {
-        val signInIntent = googleSignInClient.signInIntent
-        googleSignInLauncher.launch(signInIntent)
-    }
-
-    // Handle Google Sign-In result
     private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
@@ -90,17 +83,22 @@ class AuthActivity : ComponentActivity() {
         }
     }
 
-    // Authenticate with Firebase using Google credentials
     private fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
         val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Sign-In successful", Toast.LENGTH_SHORT).show()
-                    // Navigate to main screen or other actions
+
                 } else {
                     Toast.makeText(this, "Authentication Failed", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+
+    private fun signInWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        googleSignInLauncher.launch(signInIntent)
     }
 }

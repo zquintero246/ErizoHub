@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -81,35 +82,29 @@ fun HomeScreen(navController: NavController) {
     val db = Firebase.firestore
     val primerNombre = getFirstWord(userName)
 
-    LaunchedEffect(Unit) {
-        val response = db.collection("emprendimientos").get().await()
-        val emprendimientos = response.documents.map { document ->
-            Emprendimiento(
-                nombre_emprendimiento = document.getString("nombre_emprendimiento") ?: "",
-                descripcion = document.getString("descripcion") ?: "",
-                imagenEmprendimiento = document.getString("imagenEmprendimiento") ?: "",
-                imagenes = document.get("imagenes") as List<String>? ?: emptyList()
-            )
-        }
-
-        val emprendimientoPrueba = Emprendimiento(
-            nombre_emprendimiento = "Emprendimiento de Prueba",
-            descripcion = "Descripción del emprendimiento de prueba.",
-            imagenEmprendimiento = "https://via.placeholder.com/150",
-            imagenes = listOf("https://via.placeholder.com/100", "https://via.placeholder.com/200")
-        )
-
-        listEmprendimientos.value = emprendimientos + emprendimientoPrueba
-        filteredEmprendimientos.value = listEmprendimientos.value
-    }
-
     LaunchedEffect(user) {
-        user?.uid?.let { uid ->
-            db.collection("users").document(uid).get().addOnSuccessListener { document ->
+        user?.let { currentUser ->
+            // Obtener el nombre del usuario
+            db.collection("users").document(currentUser.uid).get().addOnSuccessListener { document ->
                 if (document.exists()) {
                     userName = document.getString("userName") ?: ""
                 }
             }
+        }
+
+        // Obtener los emprendimientos de todos los usuarios
+        db.collectionGroup("emprendimientos").get().addOnSuccessListener { response ->
+            val emprendimientos = response.documents.map { document ->
+                Emprendimiento(
+                    nombre_emprendimiento = document.getString("nombre_emprendimiento") ?: "",
+                    descripcion = document.getString("descripcion") ?: "",
+                    imagenEmprendimiento = document.getString("imagenEmprendimiento") ?: "",
+                    imagenes = document.get("imagenes") as List<String>? ?: emptyList()
+                )
+            }
+
+            listEmprendimientos.value = emprendimientos
+            filteredEmprendimientos.value = listEmprendimientos.value
         }
     }
 
@@ -132,6 +127,7 @@ fun HomeScreen(navController: NavController) {
                 text = "Bienvenido $primerNombre!",
                 fontSize = 32.sp,
                 fontFamily = customFontFamily,
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(10.dp))
             SearchField { query ->
@@ -203,8 +199,14 @@ fun EmprendimientoItem(myEmprendimiento: Emprendimiento) {
                     color = ErizoHubTheme.Colors.background,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
+                // Mostrar solo una parte de la descripción si es muy larga
+                val shortenedDescription = if (myEmprendimiento.descripcion.length > 50) {
+                    "${myEmprendimiento.descripcion.take(100)}..."
+                } else {
+                    myEmprendimiento.descripcion
+                }
                 Text(
-                    text = myEmprendimiento.descripcion,
+                    text = shortenedDescription,
                     fontSize = 10.sp,
                     fontFamily = customFontFamily,
                     color = Color.Gray

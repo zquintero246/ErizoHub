@@ -39,10 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Registrarse(
-    navController: NavController,
-    onGoogleSignUpClick: () -> Unit
-) {
+fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
     // Variables de estado
     var emailinput by remember { mutableStateOf("") }
     var nameUserinput by remember { mutableStateOf("") }
@@ -84,7 +81,7 @@ fun Registrarse(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(23.dp)
             ) {
-                Spacer(Modifier.height(47.dp))
+                Spacer(Modifier.height(30.dp))
                 TextField(
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = ErizoHubTheme.Colors.textField,
@@ -129,27 +126,6 @@ fun Registrarse(
                         .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
                 )
 
-                TextField(
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = ErizoHubTheme.Colors.textField,
-                    ),
-                    value = profilepictureinput,
-                    onValueChange = {profilepictureinput = it},
-                    label = {
-                        Text("url de la foto de perfil",
-                            color = ErizoHubTheme.Colors.textFieldText,
-                            fontFamily = customFontFamily,
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            fontSize = 10.sp
-                        )
-                    },
-                    modifier = Modifier
-                        .height(61.dp)
-                        .width(367.dp)
-                        .clip(RoundedCornerShape(50.dp))
-                        .background(color = ErizoHubTheme.Colors.textField)
-                        .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
-                )
 
 
                 TextField(
@@ -175,27 +151,6 @@ fun Registrarse(
                 )
 
 
-                TextField(
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = ErizoHubTheme.Colors.textField,
-                    ),
-                    value = passwordConfirmation,
-                    onValueChange = {passwordConfirmation = it},
-                    label = {
-                        Text("Confirmacion de contraseña",
-                            color = ErizoHubTheme.Colors.textFieldText,
-                            fontFamily = customFontFamily,
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            fontSize = 10.sp
-                        )
-                    },
-                    modifier = Modifier
-                        .height(61.dp)
-                        .width(367.dp)
-                        .clip(RoundedCornerShape(50.dp))
-                        .background(color = ErizoHubTheme.Colors.textField)
-                        .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
-                )
             }
             Column(modifier = Modifier
                 .fillMaxSize()
@@ -254,10 +209,9 @@ fun Registrarse(
                 Column{
                     ButtonGoogleFacebook(
                         text = "Continuar con Google",
-                        logoResId = R.drawable.arrow_icon,
+                        logoResId = R.drawable.googleicon,
                         onClickAction = { onGoogleSignUpClick() }
                     )
-                    //ButtonGoogleFacebook( "Continuar con Facebook", R.drawable.arrow_icon)
                 }
             }
     }

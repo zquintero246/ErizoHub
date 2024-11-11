@@ -3,6 +3,7 @@ package com.example.erizohub
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -154,7 +155,10 @@ fun HomeScreen(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 items(filteredEmprendimientos.value.size) { index ->
-                    EmprendimientoItem(myEmprendimiento = filteredEmprendimientos.value[index])
+                    EmprendimientoItem(myEmprendimiento = filteredEmprendimientos.value[index]) {
+                        // Navegar a la EmprendimientoScreen con los datos del emprendimiento seleccionado
+                        navController.navigate("emprendimientoScreen/${filteredEmprendimientos.value[index].nombre_emprendimiento}")
+                    }
                 }
             }
         }
@@ -162,13 +166,14 @@ fun HomeScreen(navController: NavController) {
 }
 
 @Composable
-fun EmprendimientoItem(myEmprendimiento: Emprendimiento) {
+fun EmprendimientoItem(myEmprendimiento: Emprendimiento, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .shadow(5.dp, shape = RoundedCornerShape(20.dp))
-            .border(1.dp, Color.Transparent, RoundedCornerShape(20.dp)),
+            .border(1.dp, Color.Transparent, RoundedCornerShape(20.dp))
+            .clickable { onClick() }, // Agrega la acción de clic aquí
         shape = RoundedCornerShape(20.dp)
     ) {
         Row(
@@ -197,9 +202,10 @@ fun EmprendimientoItem(myEmprendimiento: Emprendimiento) {
                     fontSize = 13.sp,
                     fontFamily = ErizoHubTheme.Fonts.customFontFamily,
                     color = ErizoHubTheme.Colors.background,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                        .clickable { onClick() } // Clic en el nombre para navegar
                 )
-                // Mostrar solo una parte de la descripción si es muy larga
                 val shortenedDescription = if (myEmprendimiento.descripcion.length > 50) {
                     "${myEmprendimiento.descripcion.take(100)}..."
                 } else {

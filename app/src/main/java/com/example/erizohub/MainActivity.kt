@@ -23,8 +23,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -231,6 +233,13 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("userscreen") {
                                 UserScreen(myNavController)
+                            }
+                            composable(
+                                "emprendimientoScreen/{nombreEmprendimiento}",
+                                arguments = listOf(navArgument("nombreEmprendimiento") { type = NavType.StringType })
+                            ) { backStackEntry ->
+                                val nombreEmprendimiento = backStackEntry.arguments?.getString("nombreEmprendimiento") ?: ""
+                                EmprendimientoScreen(myNavController, nombreEmprendimiento)
                             }
                             composable("chat_screen/{chatId}/{otherUserId}") { backStackEntry ->
                                 val chatId = backStackEntry.arguments?.getString("chatId") ?: ""

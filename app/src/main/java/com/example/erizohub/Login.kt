@@ -103,7 +103,7 @@ fun ButtonGoogleFacebook(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit) {
+fun IniciarSesion(navController: NavController){
     var emailInput by remember { mutableStateOf("") }
     var passwordInput by remember { mutableStateOf("") }
 
@@ -224,7 +224,7 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
                 }
             },
                 modifier = Modifier
-                    .padding(top = 20.dp)
+                    .padding(top = 29.dp)
                     .width(367.dp)
                     .height(61.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -238,29 +238,10 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
                     fontSize = 20.sp
                 )
             }
-
-            Button(onClick = {navController.navigate("register")},
-                modifier = Modifier
-                    .width(367.dp)
-                    .height(61.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black
-                ),
-            ){
-                Text(
-                    text = "Registrarse",
-                    color = ErizoHubTheme.Colors.primary,
-                    fontFamily = customFontFamily,
-                    fontSize = 20.sp
-                )
-            }
             DividerLogin(Modifier)
-            Column {
-                ButtonGoogleFacebook(
-                    text = "Iniciar sesión con Google",
-                    logoResId = R.drawable.googleicon,
-                    onClickAction = { onGoogleSignInClick() }
-                )
+            Column{
+//                ButtonGoogleFacebook( "Continuar con Google", R.drawable.arrow_icon)
+//                ButtonGoogleFacebook( "Continuar con Facebook", R.drawable.arrow_icon)
             }
         }
     }

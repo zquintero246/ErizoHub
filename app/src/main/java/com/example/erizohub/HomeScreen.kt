@@ -97,7 +97,7 @@ fun HomeScreen(navController: NavController) {
         db.collectionGroup("emprendimientos").get().addOnSuccessListener { response ->
             val emprendimientos = response.documents.map { document ->
                 Emprendimiento(
-                    nombre_emprendimiento = document.getString("nombre_emprendimiento") ?: "",
+                    nombre_emprendimiento = document.getString("nombre_emprendimiento")?.lowercase() ?: "", // Convertir a minúsculas
                     descripcion = document.getString("descripcion") ?: "",
                     imagenEmprendimiento = document.getString("imagenEmprendimiento") ?: "",
                     imagenes = document.get("imagenes") as List<String>? ?: emptyList()
@@ -108,7 +108,6 @@ fun HomeScreen(navController: NavController) {
             filteredEmprendimientos.value = listEmprendimientos.value
         }
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -132,8 +131,15 @@ fun HomeScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(10.dp))
             SearchField { query ->
-                filteredEmprendimientos.value = listEmprendimientos.value.filter {
-                    it.nombre_emprendimiento.contains(query, ignoreCase = true)
+                val queryLowercase = query.lowercase() // Convertir la búsqueda del usuario a minúsculas
+                if (queryLowercase.isEmpty()) {
+                    // Mostrar todos los emprendimientos si la barra de búsqueda está vacía
+                    filteredEmprendimientos.value = listEmprendimientos.value
+                } else {
+                    // Filtrar los emprendimientos basándose en la búsqueda en minúsculas
+                    filteredEmprendimientos.value = listEmprendimientos.value.filter {
+                        it.nombre_emprendimiento.contains(queryLowercase, ignoreCase = true)
+                    }
                 }
             }
         }

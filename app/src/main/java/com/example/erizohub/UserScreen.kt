@@ -128,7 +128,9 @@ fun UserScreen(navController: NavController) {
             }
         }
 
-        // Coloca la Row aquí, justo debajo del Image
+
+
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -138,9 +140,12 @@ fun UserScreen(navController: NavController) {
             Text(text = userName)
         }
 
-        Spacer(modifier = Modifier.height(25.dp))
 
-        Spacer(modifier = Modifier.height(75.dp))
+
+
+
+
+     
         Row(
             modifier = Modifier
                 .border(1.dp, Color(0xFF6F04D9), shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))

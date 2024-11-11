@@ -39,7 +39,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Registrarse(navController: NavController, authActivity: AuthActivity) {
+fun Registrarse(
+    navController: NavController,
+    onGoogleSignUpClick: () -> Unit
+) {
+    // Variables de estado
     var emailinput by remember { mutableStateOf("") }
     var nameUserinput by remember { mutableStateOf("") }
     var profilepictureinput by remember { mutableStateOf("https://i.pinimg.com/736x/d7/49/10/d74910bede462ec2c81f40da876d6f1a.jpg") }
@@ -251,7 +255,7 @@ fun Registrarse(navController: NavController, authActivity: AuthActivity) {
                     ButtonGoogleFacebook(
                         text = "Continuar con Google",
                         logoResId = R.drawable.arrow_icon,
-                        onClickAction = { authActivity.signInWithGoogle() }
+                        onClickAction = { onGoogleSignUpClick() }
                     )
                     //ButtonGoogleFacebook( "Continuar con Facebook", R.drawable.arrow_icon)
                 }

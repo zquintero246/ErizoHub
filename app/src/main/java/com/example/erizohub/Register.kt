@@ -43,7 +43,7 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
     // Variables de estado
     var emailinput by remember { mutableStateOf("") }
     var nameUserinput by remember { mutableStateOf("") }
-    var profilepictureinput by remember { mutableStateOf("https://i.pinimg.com/736x/d7/49/10/d74910bede462ec2c81f40da876d6f1a.jpg") }
+    var profilepictureinput by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordConfirmation by remember { mutableStateOf("") }
     var registerError by remember { mutableStateOf<String?>(null) }

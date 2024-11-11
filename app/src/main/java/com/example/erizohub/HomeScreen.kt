@@ -1,94 +1,213 @@
 package com.example.erizohub
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
+import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
+fun getFirstWord(text: String): String {
+    return text.split(" ").firstOrNull() ?: ""
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchField(onSearchTextChanged: (String) -> Unit) {
+    var searchText by remember { mutableStateOf("") }
+
+    TextField(
+        value = searchText,
+        onValueChange = {
+            searchText = it
+            onSearchTextChanged(it)
+        },
+        label = {
+            Text(
+                text = "Buscar Emprendimiento...",
+                color = ErizoHubTheme.Colors.textFieldText,
+                fontFamily = customFontFamily,
+                fontSize = 10.sp
+            )
+        },
+        leadingIcon = {
+            Image(
+                painter = painterResource(id = R.drawable.lupa),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        colors = TextFieldDefaults.textFieldColors(
+            containerColor = ErizoHubTheme.Colors.textField,
+        ),
+        modifier = Modifier
+            .height(61.dp)
+            .width(367.dp)
+            .clip(RoundedCornerShape(50.dp))
+            .background(color = ErizoHubTheme.Colors.textField)
+            .border(1.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+            .padding(horizontal = 16.dp)
+    )
+}
 
 @Composable
-fun HomeScreen(navController: NavController){
-    val listEmprendimientos = remember {
-        mutableStateOf<List<Emprendimiento>>(emptyList())
-    }
-    LaunchedEffect(Unit) {
-        val db = Firebase.firestore
-        val response = db.collection("emprendimientos").get().await()
-        val emprendimientos = response.documents.map{ document ->
-            Emprendimiento(
-                nombre_emprendimiento = document.getString("nombre_emprendimiento")?: "",
-                descripcion= document.getString("descripcion")?: "",
-                imagenEmprendimiento = document.getString("imagenEmprendimiento")?: "",
-                imagenes = document.get("imagenes") as List<String>? ?: emptyList()
+fun HomeScreen(navController: NavController) {
+    var userName by remember { mutableStateOf("") }
+    val listEmprendimientos = remember { mutableStateOf<List<Emprendimiento>>(emptyList()) }
+    val filteredEmprendimientos = remember { mutableStateOf<List<Emprendimiento>>(emptyList()) }
+    val user = FirebaseAuth.getInstance().currentUser
+    val db = Firebase.firestore
+    val primerNombre = getFirstWord(userName)
 
+    LaunchedEffect(Unit) {
+        val response = db.collection("emprendimientos").get().await()
+        val emprendimientos = response.documents.map { document ->
+            Emprendimiento(
+                nombre_emprendimiento = document.getString("nombre_emprendimiento") ?: "",
+                descripcion = document.getString("descripcion") ?: "",
+                imagenEmprendimiento = document.getString("imagenEmprendimiento") ?: "",
+                imagenes = document.get("imagenes") as List<String>? ?: emptyList()
             )
         }
-        listEmprendimientos.value= emprendimientos
+
+        val emprendimientoPrueba = Emprendimiento(
+            nombre_emprendimiento = "Emprendimiento de Prueba",
+            descripcion = "Descripción del emprendimiento de prueba.",
+            imagenEmprendimiento = "https://via.placeholder.com/150",
+            imagenes = listOf("https://via.placeholder.com/100", "https://via.placeholder.com/200")
+        )
+
+        listEmprendimientos.value = emprendimientos + emprendimientoPrueba
+        filteredEmprendimientos.value = listEmprendimientos.value
     }
 
-    LazyColumn (
-        verticalArrangement = Arrangement.spacedBy(14.dp)
-    ){
-        items(listEmprendimientos.value.size){
-            Emprendimientoitem(myEmprendimiento = listEmprendimientos.value[it])
+    LaunchedEffect(user) {
+        user?.uid?.let { uid ->
+            db.collection("users").document(uid).get().addOnSuccessListener { document ->
+                if (document.exists()) {
+                    userName = document.getString("userName") ?: ""
+                }
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(top = 20.dp, bottom = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                color = ErizoHubTheme.Colors.primary,
+                text = "Bienvenido $primerNombre!",
+                fontSize = 32.sp,
+                fontFamily = customFontFamily,
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            SearchField { query ->
+                filteredEmprendimientos.value = listEmprendimientos.value.filter {
+                    it.nombre_emprendimiento.contains(query, ignoreCase = true)
+                }
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Emprendimientos recientes",
+                fontSize = 20.sp,
+                fontFamily = customFontFamily,
+                color = ErizoHubTheme.Colors.primary,
+            )
+            Spacer(modifier = Modifier.height(29.dp))
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                items(filteredEmprendimientos.value.size) { index ->
+                    EmprendimientoItem(myEmprendimiento = filteredEmprendimientos.value[index])
+                }
+            }
         }
     }
 }
 
-
-
-
 @Composable
-fun Emprendimientoitem(myEmprendimiento: Emprendimiento) {
-    Card(modifier = Modifier.padding(8.dp)) {
+fun EmprendimientoItem(myEmprendimiento: Emprendimiento) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .shadow(5.dp, shape = RoundedCornerShape(20.dp))
+            .border(1.dp, Color.Transparent, RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .background(Color(0xFFF6F6F6))
+                .border(3.dp, Color.Transparent, RoundedCornerShape(20.dp)),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
                 model = myEmprendimiento.imagenEmprendimiento,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(100.dp)
-                    .padding(end = 12.dp),
+                    .size(150.dp)
+                    .padding(end = 12.dp)
+                    .clip(RoundedCornerShape(20.dp)),
                 contentScale = ContentScale.Crop
             )
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
             ) {
                 Text(
                     text = myEmprendimiento.nombre_emprendimiento,
-                    fontSize = 20.sp,
+                    fontSize = 13.sp,
+                    fontFamily = ErizoHubTheme.Fonts.customFontFamily,
+                    color = ErizoHubTheme.Colors.background,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
-                    text = "Email: ${myEmprendimiento.descripcion}",
-                    fontSize = 16.sp
+                    text = myEmprendimiento.descripcion,
+                    fontSize = 10.sp,
+                    fontFamily = customFontFamily,
+                    color = Color.Gray
                 )
             }
         }

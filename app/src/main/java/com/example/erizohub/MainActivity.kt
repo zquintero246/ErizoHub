@@ -6,50 +6,25 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallTopAppBar
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.erizohub.ui.theme.ErizoHubTheme
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -57,9 +32,37 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ErizoHubTheme() {
-                val myNavcontroller = rememberNavController()
-                var selectItem by remember { mutableIntStateOf(0) }
+            ErizoHubTheme {
+                val myNavController = rememberNavController()
+                var selectedItem by remember { mutableIntStateOf(0) }
+                var bottomBarColor by remember { mutableStateOf(Color(0xFFF2A74B)) }
+                var bottomBarColorBackground by remember { mutableStateOf(ErizoHubTheme.Colors.background) }
+                var bottomBarIcons by remember { mutableStateOf(ErizoHubTheme.Colors.background) }
+
+                LaunchedEffect(myNavController) {
+                    myNavController.addOnDestinationChangedListener { _, destination, _ ->
+                        bottomBarColor = when (destination.route) {
+                            "home" -> ErizoHubTheme.Colors.background
+                            "emprende" -> ErizoHubTheme.Colors.background
+                            "chat" -> ErizoHubTheme.Colors.background
+                            else -> Color(0xFFF2A74B)
+                        }
+
+                        bottomBarColorBackground = when (destination.route) {
+                            "home" -> Color.White
+                            "emprende" -> Color.White
+                            "chat" -> Color.White
+                            else -> ErizoHubTheme.Colors.background
+                        }
+
+                        bottomBarIcons = when (destination.route) {
+                            "home" -> Color(0xFFF2A74B)
+                            "emprende" -> Color(0xFFF2A74B)
+                            "chat" -> Color(0xFFF2A74B)
+                            else -> ErizoHubTheme.Colors.background
+                        }
+                    }
+                }
 
                 Scaffold(
                     topBar = {
@@ -69,14 +72,14 @@ class MainActivity : ComponentActivity() {
                             actions = {
                                 IconButton(
                                     onClick = {
-                                        myNavcontroller.navigate("userscreen") {
-                                            popUpTo(myNavcontroller.graph.findStartDestination().id) {
+                                        myNavController.navigate("userscreen") {
+                                            popUpTo(myNavController.graph.findStartDestination().id) {
                                                 saveState = true
                                             }
                                             launchSingleTop = true
                                             restoreState = true
                                         }
-                                        selectItem = 4
+                                        selectedItem = 4
                                     }
                                 ) {
                                     Icon(
@@ -89,98 +92,121 @@ class MainActivity : ComponentActivity() {
                     },
                     bottomBar = {
                         NavigationBar(
-                            containerColor = Color(0xFFF2A74B),
+                            containerColor = bottomBarColor,
                             modifier = Modifier
-                                .background(color = ErizoHubTheme.Colors.background)
-                                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)))
-                        {
+                                .background(color = bottomBarColorBackground)
+                                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+                        ) {
                             NavigationBarItem(
-                                selected = selectItem == 0,
+                                selected = selectedItem == 0,
                                 onClick = {
-                                    myNavcontroller.navigate("home") {
+                                    myNavController.navigate("home") {
                                         restoreState = true
-                                        popUpTo(myNavcontroller.graph.findStartDestination().id) {
+                                        popUpTo(myNavController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
                                         launchSingleTop = true
                                     }
-                                    selectItem = 0
+                                    selectedItem = 0
                                 },
                                 icon = {
                                     Image(
                                         painter = painterResource(id = R.drawable.homemorado),
                                         contentDescription = "Home",
-                                        modifier = Modifier.size(24.dp)
+                                        modifier = Modifier.size(24.dp),
+                                        colorFilter = ColorFilter.tint(bottomBarIcons)
                                     )
                                 },
                                 label = {
                                     Text(
-                                        modifier = Modifier,
                                         fontWeight = FontWeight.Normal,
                                         fontSize = 15.sp,
-                                        color = ErizoHubTheme.Colors.background,
+                                        color = bottomBarIcons,
                                         fontFamily = ErizoHubTheme.Fonts.customFontFamily,
                                         text = "Home"
                                     )
-                                }
+                                },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = bottomBarIcons,
+                                    unselectedIconColor = bottomBarIcons.copy(alpha = 0.6f),
+                                    selectedTextColor = bottomBarIcons,
+                                    unselectedTextColor = bottomBarIcons.copy(alpha = 0.6f),
+                                    indicatorColor = Color.Transparent
+                                )
                             )
                             NavigationBarItem(
-                                selected = selectItem == 1,
+                                selected = selectedItem == 1,
                                 onClick = {
-                                    myNavcontroller.navigate("emprende") {
-                                        popUpTo(myNavcontroller.graph.findStartDestination().id) {
+                                    myNavController.navigate("emprende") {
+                                        popUpTo(myNavController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
                                         launchSingleTop = true
                                         restoreState = true
                                     }
-                                    selectItem = 1
+                                    selectedItem = 1
                                 },
                                 icon = {
                                     Image(
                                         painter = painterResource(id = R.drawable.emprendemorado),
-                                        contentDescription = "Home",
-                                        modifier = Modifier.size(24.dp)
-                                    )                                },
+                                        contentDescription = "Emprende",
+                                        modifier = Modifier.size(24.dp),
+                                        colorFilter = ColorFilter.tint(bottomBarIcons)
+                                    )
+                                },
                                 label = {
                                     Text(
-                                        modifier = Modifier,
                                         fontWeight = FontWeight.Normal,
                                         fontSize = 15.sp,
-                                        color = ErizoHubTheme.Colors.background,
+                                        color = bottomBarIcons,
                                         fontFamily = ErizoHubTheme.Fonts.customFontFamily,
                                         text = "Emprende"
                                     )
-                                }
+                                },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = bottomBarIcons,
+                                    unselectedIconColor = bottomBarIcons.copy(alpha = 0.6f),
+                                    selectedTextColor = bottomBarIcons,
+                                    unselectedTextColor = bottomBarIcons.copy(alpha = 0.6f),
+                                    indicatorColor = Color.Transparent
+                                )
                             )
                             NavigationBarItem(
-                                selected = selectItem == 2,
+                                selected = selectedItem == 2,
                                 onClick = {
-                                    myNavcontroller.navigate("chat") {
-                                        popUpTo(myNavcontroller.graph.findStartDestination().id) {
+                                    myNavController.navigate("chat") {
+                                        popUpTo(myNavController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
                                         launchSingleTop = true
                                         restoreState = true
                                     }
-                                    selectItem = 2
+                                    selectedItem = 2
                                 },
                                 icon = {
                                     Image(
                                         painter = painterResource(id = R.drawable.chatmorado),
-                                        contentDescription = "Home",
-                                        modifier = Modifier.size(24.dp)
-                                    )                                },
+                                        contentDescription = "Chat",
+                                        modifier = Modifier.size(24.dp),
+                                        colorFilter = ColorFilter.tint(bottomBarIcons)
+                                    )
+                                },
                                 label = {
                                     Text(
-                                        modifier = Modifier,
                                         fontWeight = FontWeight.Normal,
                                         fontSize = 15.sp,
-                                        color = ErizoHubTheme.Colors.background,
+                                        color = bottomBarIcons,
                                         fontFamily = ErizoHubTheme.Fonts.customFontFamily,
                                         text = "Chat"
                                     )
-                                }
+                                },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = bottomBarIcons,
+                                    unselectedIconColor = bottomBarIcons.copy(alpha = 0.6f),
+                                    selectedTextColor = bottomBarIcons,
+                                    unselectedTextColor = bottomBarIcons.copy(alpha = 0.6f),
+                                    indicatorColor = Color.Transparent
+                                )
                             )
                         }
                     }
@@ -188,23 +214,20 @@ class MainActivity : ComponentActivity() {
                     Column(
                         modifier = Modifier
                             .padding(innerPadding)
-                            .padding(0.dp)
-                            .background(
-                                color = Color(0xFFF2A74B)
-                            )
+                            .background(color = Color(0xFFF2A74B))
                     ) {
-                        NavHost(navController = myNavcontroller, startDestination = "home") {
+                        NavHost(navController = myNavController, startDestination = "home") {
                             composable("home") {
-                                HomeScreen(myNavcontroller)
+                                HomeScreen(myNavController)
                             }
                             composable("emprende") {
-                                EmprendeScreen(myNavcontroller)
+                                EmprendeScreen(myNavController)
                             }
                             composable("chat") {
-                                ChatScreen(myNavcontroller)
+                                ChatScreen(myNavController)
                             }
                             composable("userscreen") {
-                                UserScreen(myNavcontroller)
+                                UserScreen(myNavController)
                             }
                         }
                     }
@@ -213,4 +236,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

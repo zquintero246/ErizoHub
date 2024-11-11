@@ -14,13 +14,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-<<<<<<< Updated upstream
-=======
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
->>>>>>> Stashed changes
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -37,14 +34,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-<<<<<<< Updated upstream
-=======
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
->>>>>>> Stashed changes
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -58,11 +52,25 @@ import com.google.firebase.firestore.FirebaseFirestore
 fun UserScreen(navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
     var urlText by remember { mutableStateOf("") }
-
-<<<<<<< Updated upstream
     var userName by remember { mutableStateOf("") }
     var profilePictureUrl by remember { mutableStateOf("") }
-=======
+
+
+
+    val user = FirebaseAuth.getInstance().currentUser
+    val db = FirebaseFirestore.getInstance()
+
+    fun updateProfilePictureUrl(newUrl: String) {
+        user?.uid?.let { uid ->
+            db.collection("users").document(uid)
+                .update("profilePictureUrl", newUrl)
+                .addOnSuccessListener {
+                    profilePictureUrl = newUrl
+                }
+        }
+    }
+
+
     Column(modifier = Modifier.fillMaxWidth().background(color = Color.White).padding(0.dp, 0.dp, 0.dp, 0.dp)) {
         Column (modifier = Modifier
             .height(350.dp)
@@ -75,17 +83,31 @@ fun UserScreen(navController: NavController) {
             Button(
                 onClick = { expanded = !expanded },
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
-                )
+                    .align(Alignment.CenterHorizontally)
+                    .width(198.dp)
+                    .height(198.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.profile),
-                    contentDescription = "profile",
-                    modifier = Modifier.size(150.dp)
-                )
+                if (profilePictureUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = profilePictureUrl,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(CircleShape)
+                            .border(1.dp, Color.Gray, CircleShape)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.profile),
+                        contentDescription = "profile",
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(CircleShape)
+                            .border(50.dp, Color.Black, CircleShape)
+                    )
+                }
+
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
@@ -96,32 +118,41 @@ fun UserScreen(navController: NavController) {
                         label = { Text("Insert URL") },
                         modifier = Modifier.padding(16.dp)
                     )
+                    Button(
+                        onClick = {
+                            if (urlText.isNotEmpty()) {
+                                updateProfilePictureUrl(urlText)
+                                expanded = false // Cierra el menú desplegable
+                            }
+                        },
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    ) {
+                        Text("Guardar")
+                    }
                 }
             }
-            Text(
-                modifier = Modifier,
-                fontSize = 20.sp,
-                fontFamily = ErizoHubTheme.Fonts.customFontFamily,
-                color = Color(0xFFB8B8B8),
-                text = "Nombre usuario"
-            )
-        }
->>>>>>> Stashed changes
 
-    val user = FirebaseAuth.getInstance().currentUser
-    val db = FirebaseFirestore.getInstance()
 
-<<<<<<< Updated upstream
-    // Función para actualizar la URL de la imagen en Firestore
-    fun updateProfilePictureUrl(newUrl: String) {
-        user?.uid?.let { uid ->
-            db.collection("users").document(uid)
-                .update("profilePictureUrl", newUrl)
-                .addOnSuccessListener {
-                    profilePictureUrl = newUrl
-                }
+
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 1.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    modifier = Modifier,
+                    fontSize = 20.sp,
+                    fontFamily = ErizoHubTheme.Fonts.customFontFamily,
+                    color = Color(0xFFB8B8B8),
+                    text = userName)
+            }
+
         }
-    }
+
+
+
 
     LaunchedEffect(user) {
         user?.uid?.let { uid ->
@@ -134,129 +165,6 @@ fun UserScreen(navController: NavController) {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = Color.White)
-            .padding(0.dp, 0.dp, 0.dp, 0.dp)
-    ) {
-        Button(
-            onClick = { expanded = !expanded },
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(0.dp, 100.dp, 0.dp, 20.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
-        ) {
-            if (profilePictureUrl.isNotEmpty()) {
-                // Usa AsyncImage de Coil para cargar la imagen desde una URL
-                AsyncImage(
-                    model = profilePictureUrl,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier.size(150.dp)
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.profile),
-                    contentDescription = "profile",
-                    modifier = Modifier.size(150.dp)
-                )
-            }
-
-            // Pequeño menú desplegable que aparece al hacer clic
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                TextField(
-                    value = urlText,
-                    onValueChange = { urlText = it },
-                    label = { Text("Insert URL") },
-                    modifier = Modifier.padding(16.dp)
-                )
-                Button(
-                    onClick = {
-                        if (urlText.isNotEmpty()) {
-                            updateProfilePictureUrl(urlText)
-                            expanded = false // Cierra el menú desplegable
-                        }
-                    },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                ) {
-                    Text("Guardar")
-                }
-            }
-        }
-
-
-
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 1.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(text = userName)
-        }
-
-
-
-
-
-
-     
-        Row(
-            modifier = Modifier
-                .border(1.dp, Color(0xFF6F04D9), shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
-                .padding(top = 0.dp)
-                .background(Color(0xFF6F04D9), shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
-                .fillMaxSize()
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize().padding(top = 40.dp)
-            ) {
-                Spacer(modifier = Modifier.height(25.dp))
-                HorizontalDivider(modifier = Modifier.width(325.dp), color = Color(0xFFCCB5E2))
-
-                Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
-                    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.width(280.dp)) {
-                        Text(text = "Emprendimientos Activos", color = Color(0xFFCCB5E2))
-                        Spacer(modifier = Modifier.width(0.dp))
-                        Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Menu")
-                    }
-                }
-
-                HorizontalDivider(modifier = Modifier.width(325.dp), color = Color(0xFFCCB5E2))
-
-                Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
-                    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.width(280.dp)) {
-                        Text(text = "Servicios Pagados", color = Color(0xFFCCB5E2))
-                        Spacer(modifier = Modifier.width(0.dp))
-                        Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Menu")
-                    }
-                }
-
-                HorizontalDivider(modifier = Modifier.width(325.dp), color = Color(0xFFCCB5E2))
-
-                Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
-                    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.width(280.dp)) {
-                        Text(text = "Historial", color = Color(0xFFCCB5E2))
-                        Spacer(modifier = Modifier.width(0.dp))
-                        Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Menu")
-                    }
-                }
-
-                HorizontalDivider(modifier = Modifier.width(325.dp), color = Color(0xFFCCB5E2))
-
-                Spacer(modifier = Modifier.height(25.dp))
-
-                Text(text = "Promedio de Calificacion", color = Color(0xFFCCB5E2))
-                Text(text = "0.0", color = Color(0xFFCCB5E2))
-
-                Spacer(modifier = Modifier.height(40.dp))
-            }
-=======
         Column(horizontalAlignment = Alignment.CenterHorizontally,
             modifier=Modifier
                 .fillMaxSize()
@@ -367,9 +275,6 @@ fun UserScreen(navController: NavController) {
                 fontFamily = ErizoHubTheme.Fonts.customFontFamily,
                 text= "0.0"
             )
-
-
->>>>>>> Stashed changes
         }
     }
 }

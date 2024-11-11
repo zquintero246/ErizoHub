@@ -41,7 +41,6 @@ import androidx.navigation.NavController
 import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
 import com.google.firebase.auth.FirebaseAuth
 
-
 @Composable
 fun DividerLogin(modifier: Modifier) {
     HorizontalDivider(
@@ -107,7 +106,6 @@ fun ButtonGoogleFacebook(
 fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit) {
     var emailInput by remember { mutableStateOf("") }
     var passwordInput by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
 
     val context = LocalContext.current
 

@@ -44,7 +44,33 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf(0)
                 }
 
-                Scaffold(bottomBar = {
+                Scaffold(topBar = {
+                    NavigationBar {
+                        NavigationBarItem(
+                            selected = selectItem == 4,
+                            onClick = {
+                                myNavcontroller.navigate("userscreen"){
+                                    popUpTo(myNavcontroller.graph.findStartDestination().id){
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                                selectItem = 4
+                            },
+                            icon = {
+                                Icon(imageVector = Icons.Filled.AccountCircle,
+                                    contentDescription = "UserScreen" )
+                            },
+                            label = {
+                                Text(text = "UserScreen")
+                            }
+                        )
+                    }
+                                  }
+
+
+                    ,bottomBar = {
                     NavigationBar {
                         NavigationBarItem(
                             selected = selectItem == 0,
@@ -124,7 +150,7 @@ class MainActivity : ComponentActivity() {
                         .padding(innerPadding)
                         .padding(12.dp).background(shape = androidx.compose.foundation.shape.RoundedCornerShape(30.dp), color = Color(0xFFF2A74B))) {
                         NavHost(navController = myNavcontroller,
-                            startDestination = "profile" )
+                            startDestination = "home" )
                         {
                             composable("home")   {
                                 HomeScreen(myNavcontroller)
@@ -134,6 +160,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("chat")   {
                                 ChatScreen(myNavcontroller)
+                            }
+                            composable("userscreen")   {
+                                UserScreen(myNavcontroller)
                             }
 
                         }

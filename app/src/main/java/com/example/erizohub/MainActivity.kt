@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
                         .padding(innerPadding)
                         .padding(12.dp).background(shape = androidx.compose.foundation.shape.RoundedCornerShape(30.dp), color = Color(0xFFF2A74B))) {
                         NavHost(navController = myNavcontroller,
-                            startDestination = "profile" )
+                            startDestination = "home" )
                         {
                             composable("home")   {
                                 HomeScreen(myNavcontroller)

@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -127,24 +129,69 @@ fun Perfil() {
                 Text(text= "Promedio de Calificacion")
                 Text(text= "0.0")
 
-                Spacer(modifier=  Modifier.height(25.dp))
+                Spacer(modifier=  Modifier.height(40.dp))
 
                 Row(horizontalArrangement = Arrangement.SpaceBetween,modifier=Modifier.width(325.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(text="Calificar:",color=Color.White)
-                    Button(onClick={ /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
-                        Icon(imageVector = Icons.Filled.Star, contentDescription = "Star")
+                    Button(
+                        onClick = { /*TODO*/ },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
+                        modifier = Modifier.size(30.dp),
+                        contentPadding = PaddingValues(0.dp) // Esto elimina el padding interno
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Star,
+                            contentDescription = "Star",
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
-                    Button(onClick={ /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
-                        Icon(imageVector = Icons.Filled.Star, contentDescription = "Star")
+                    Button(
+                        onClick = { /*TODO*/ },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
+                        modifier = Modifier.size(30.dp),
+                        contentPadding = PaddingValues(0.dp) // Esto elimina el padding interno
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = "Star",
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
-                    Button(onClick={ /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
-                        Icon(imageVector = Icons.Filled.Star, contentDescription = "Star")
+                    Button(
+                        onClick = { /*TODO*/ },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
+                        modifier = Modifier.size(30.dp),
+                        contentPadding = PaddingValues(0.dp) // Esto elimina el padding interno
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = "Star",
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
-                    Button(onClick={ /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
-                        Icon(imageVector = Icons.Filled.Star, contentDescription = "Star")
+                    Button(
+                        onClick = { /*TODO*/ },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
+                        modifier = Modifier.size(30.dp),
+                        contentPadding = PaddingValues(0.dp) // Esto elimina el padding interno
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = "Star",
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
-                    Button(onClick={ /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
-                        Icon(imageVector = Icons.Filled.Star, contentDescription = "Star")
+                    Button(
+                        onClick = { /*TODO*/ },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
+                        modifier = Modifier.size(30.dp),
+                        contentPadding = PaddingValues(0.dp) // Esto elimina el padding interno
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = "Star",
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
 
                 }

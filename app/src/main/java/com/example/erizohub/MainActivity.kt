@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -29,6 +30,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -120,7 +122,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding->
                     Column (modifier = Modifier
                         .padding(innerPadding)
-                        .padding(12.dp)){
+                        .padding(12.dp).background(shape = androidx.compose.foundation.shape.RoundedCornerShape(30.dp), color = Color(0xFFF2A74B))) {
                         NavHost(navController = myNavcontroller,
                             startDestination = "profile" )
                         {

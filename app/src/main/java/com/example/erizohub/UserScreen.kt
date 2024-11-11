@@ -3,7 +3,9 @@ package com.example.erizohub
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +39,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -54,8 +57,7 @@ fun UserScreen(navController: NavController) {
     var urlText by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var profilePictureUrl by remember { mutableStateOf("") }
-
-
+    var isEditingProfile by remember { mutableStateOf(false) }
 
     val user = FirebaseAuth.getInstance().currentUser
     val db = FirebaseFirestore.getInstance()
@@ -66,45 +68,57 @@ fun UserScreen(navController: NavController) {
                 .update("profilePictureUrl", newUrl)
                 .addOnSuccessListener {
                     profilePictureUrl = newUrl
+                    isEditingProfile = false
                 }
         }
     }
 
+    fun updateUserName(newName: String) {
+        user?.uid?.let { uid ->
+            db.collection("users").document(uid)
+                .update("userName", newName)
+                .addOnSuccessListener {
+                    userName = newName
+                    isEditingProfile = false
+                }
+        }
+    }
 
-    Column(modifier = Modifier.fillMaxWidth().background(color = Color.White).padding(0.dp, 0.dp, 0.dp, 0.dp)) {
-        Column (modifier = Modifier
-            .height(350.dp)
+    Column(
+        modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color.White),
+            .background(color = Color.White)
+            .padding(0.dp, 0.dp, 0.dp, 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .height(350.dp)
+                .fillMaxWidth()
+                .background(color = Color.White),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
-        )
-        {
-            Button(
-                onClick = { expanded = !expanded },
+        ) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .width(198.dp)
-                    .height(198.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
+                    .size(198.dp)
+                    .clip(CircleShape)
+                    .clickable(enabled = isEditingProfile) { expanded = !expanded }
             ) {
                 if (profilePictureUrl.isNotEmpty()) {
                     AsyncImage(
                         model = profilePictureUrl,
                         contentDescription = "Profile Picture",
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(150.dp)
-                            .clip(CircleShape)
-                            .border(1.dp, Color.Gray, CircleShape)
+                            .fillMaxSize()
                     )
                 } else {
                     Image(
                         painter = painterResource(id = R.drawable.profile),
                         contentDescription = "profile",
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(150.dp)
-                            .clip(CircleShape)
-                            .border(50.dp, Color.Black, CircleShape)
+                            .fillMaxSize()
                     )
                 }
 
@@ -122,7 +136,7 @@ fun UserScreen(navController: NavController) {
                         onClick = {
                             if (urlText.isNotEmpty()) {
                                 updateProfilePictureUrl(urlText)
-                                expanded = false // Cierra el menú desplegable
+                                expanded = false
                             }
                         },
                         modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -132,61 +146,76 @@ fun UserScreen(navController: NavController) {
                 }
             }
 
-
-
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 1.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    modifier = Modifier,
-                    fontSize = 20.sp,
-                    fontFamily = ErizoHubTheme.Fonts.customFontFamily,
-                    color = Color(0xFFB8B8B8),
-                    text = userName)
-            }
-
-        }
-
-
-
-
-    LaunchedEffect(user) {
-        user?.uid?.let { uid ->
-            db.collection("users").document(uid).get().addOnSuccessListener { document ->
-                if (document.exists()) {
-                    userName = document.getString("userName") ?: ""
-                    profilePictureUrl = document.getString("profilePictureUrl") ?: ""
+                if (isEditingProfile) {
+                    TextField(
+                        value = userName,
+                        onValueChange = { userName = it },
+                        label = { Text("Nombre de Usuario") },
+                        singleLine = true,
+                        modifier = Modifier.width(200.dp)
+                    )
+                } else {
+                    Text(
+                        fontSize = 20.sp,
+                        fontFamily = ErizoHubTheme.Fonts.customFontFamily,
+                        color = Color(0xFFB8B8B8),
+                        text = userName
+                    )
                 }
             }
         }
-    }
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally,
-            modifier=Modifier
+        LaunchedEffect(user) {
+            user?.uid?.let { uid ->
+                db.collection("users").document(uid).get().addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        userName = document.getString("userName") ?: ""
+                        profilePictureUrl = document.getString("profilePictureUrl") ?: ""
+                    }
+                }
+            }
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
                 .fillMaxSize()
-                .background(ErizoHubTheme.Colors.background, shape = RoundedCornerShape(topStart=30.dp,topEnd=30.dp))
+                .background(ErizoHubTheme.Colors.background, shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
         ) {
-            Button(onClick = { /*TODO*/ },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-                    .width(225.dp).height(59.dp)
-                    .offset(y= -25.dp)
-                    .border(1.dp, Color.Gray,shape= RoundedCornerShape(30.dp))
-                    .shadow(20.dp,shape= RoundedCornerShape(30.dp))
-                ,
+            Button(
+                onClick = {
+                    if (isEditingProfile) {
+                        if (urlText.isNotEmpty()) {
+                            updateProfilePictureUrl(urlText)
+                        }
+                        updateUserName(userName)
+                    }
+                    isEditingProfile = !isEditingProfile
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .width(225.dp)
+                    .height(59.dp)
+                    .offset(y = -25.dp)
+                    .border(1.dp, Color.Gray, shape = RoundedCornerShape(30.dp))
+                    .shadow(20.dp, shape = RoundedCornerShape(30.dp)),
                 elevation = ButtonDefaults.buttonElevation(20.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black))
-            {
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
+            ) {
                 Text(
                     modifier = Modifier.alpha(0.8f),
                     fontWeight = FontWeight.Normal,
                     color = Color(0xFF656262),
                     fontSize = 20.sp,
                     fontFamily = ErizoHubTheme.Fonts.customFontFamily,
-                    text="Editar Perfil")
+                    text = if (isEditingProfile) "Guardar" else "Editar Perfil"
+                )
             }
 
             HorizontalDivider(modifier = Modifier.width(325.dp).padding(top = 10.dp).alpha(0.5f))
@@ -196,20 +225,20 @@ fun UserScreen(navController: NavController) {
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9))
             ) {
                 Row(horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier=Modifier.width(280.dp)) {
+                    modifier = Modifier.width(280.dp)) {
                     Text(
                         modifier = Modifier.alpha(0.5f),
                         fontWeight = FontWeight.Normal,
                         fontFamily = ErizoHubTheme.Fonts.customFontFamily,
                         fontSize = 15.sp,
-                        text="Emprendimientos Activos"
+                        text = "Emprendimientos Activos"
                     )
-                    Spacer(modifier=  Modifier.width(0.dp))
+                    Spacer(modifier = Modifier.width(0.dp))
                     Icon(
                         modifier = Modifier.alpha(0.5f),
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = "Menu")
-
+                        contentDescription = "Menu"
+                    )
                 }
             }
 

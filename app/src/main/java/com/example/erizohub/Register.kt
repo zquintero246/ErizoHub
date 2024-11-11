@@ -159,32 +159,26 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,){
 
                 Button( onClick = {if (nameUserinput.isEmpty()
-                    || emailinput.isEmpty() || profilepictureinput.isEmpty()|| password.isEmpty()|| passwordConfirmation.isEmpty()){
+                    || emailinput.isEmpty() || password.isEmpty()){
                     Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()
                 }else{
-                    if (password == passwordConfirmation) {
-                        registerError = null
-
-                        auth.createUserWithEmailAndPassword(emailinput, password)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    // Guardar datos en Firestore
-                                    val user = auth.currentUser
-                                    val newUser = User (
-                                        userName = nameUserinput,
-                                        emailc = emailinput,
-                                        profilePictureUrl = profilepictureinput,
-                                        )
-                                    db.collection("users").document(user!!.uid).set(newUser)
-                                    Toast.makeText(context, "Se guardo correctamente",Toast.LENGTH_SHORT).show()
-                                    navController.navigate("login")
+                    auth.createUserWithEmailAndPassword(emailinput, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Guardar datos en Firestore
+                                val user = auth.currentUser
+                                val newUser = User (
+                                    userName = nameUserinput,
+                                    emailc = emailinput,
+                                    profilePictureUrl = profilepictureinput,
+                                    )
+                                db.collection("users").document(user!!.uid).set(newUser)
+                                Toast.makeText(context, "Se guardo correctamente",Toast.LENGTH_SHORT).show()
+                                navController.navigate("login")
                                 } else {
                                     Toast.makeText(context, "Error al registrar usuario",Toast.LENGTH_SHORT).show()
                                 }
                             }
-                    } else {
-                        registerError = "Las contraseñas no coinciden"
-                    }
 
                 }
 

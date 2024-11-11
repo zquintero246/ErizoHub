@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -42,14 +40,10 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -59,12 +53,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             ErizoHubTheme() {
                 val myNavcontroller = rememberNavController()
-                var selectItem by remember { mutableIntStateOf(0) }
+                var selectItem by remember { mutableStateOf(0) }
 
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            modifier = Modifier.background(color = Color.White),
                             title = { Text("") },
                             actions = {
                                 IconButton(
@@ -89,11 +82,8 @@ class MainActivity : ComponentActivity() {
                     },
                     bottomBar = {
                         NavigationBar(
-                            containerColor = Color(0xFFF2A74B),
-                            modifier = Modifier
-                                .background(color = ErizoHubTheme.Colors.background)
-                                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)))
-                        {
+                            containerColor = Color(0xFFF2784B),modifier = Modifier.clip(
+                                RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))) {
                             NavigationBarItem(
                                 selected = selectItem == 0,
                                 onClick = {
@@ -107,21 +97,10 @@ class MainActivity : ComponentActivity() {
                                     selectItem = 0
                                 },
                                 icon = {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.homemorado),
-                                        contentDescription = "Home",
-                                        modifier = Modifier.size(24.dp)
-                                    )
+                                    Icon(imageVector = Icons.Filled.Home, contentDescription = "Home")
                                 },
                                 label = {
-                                    Text(
-                                        modifier = Modifier,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 15.sp,
-                                        color = ErizoHubTheme.Colors.background,
-                                        fontFamily = ErizoHubTheme.Fonts.customFontFamily,
-                                        text = "Home"
-                                    )
+                                    Text(text = "Home")
                                 }
                             )
                             NavigationBarItem(
@@ -137,20 +116,10 @@ class MainActivity : ComponentActivity() {
                                     selectItem = 1
                                 },
                                 icon = {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.emprendemorado),
-                                        contentDescription = "Home",
-                                        modifier = Modifier.size(24.dp)
-                                    )                                },
+                                    Icon(imageVector = Icons.Filled.Menu, contentDescription = "Emprende")
+                                },
                                 label = {
-                                    Text(
-                                        modifier = Modifier,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 15.sp,
-                                        color = ErizoHubTheme.Colors.background,
-                                        fontFamily = ErizoHubTheme.Fonts.customFontFamily,
-                                        text = "Emprende"
-                                    )
+                                    Text(text = "Emprende")
                                 }
                             )
                             NavigationBarItem(
@@ -166,20 +135,10 @@ class MainActivity : ComponentActivity() {
                                     selectItem = 2
                                 },
                                 icon = {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.chatmorado),
-                                        contentDescription = "Home",
-                                        modifier = Modifier.size(24.dp)
-                                    )                                },
+                                    Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = "Chat")
+                                },
                                 label = {
-                                    Text(
-                                        modifier = Modifier,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 15.sp,
-                                        color = ErizoHubTheme.Colors.background,
-                                        fontFamily = ErizoHubTheme.Fonts.customFontFamily,
-                                        text = "Chat"
-                                    )
+                                    Text(text = "Chat")
                                 }
                             )
                         }

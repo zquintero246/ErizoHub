@@ -44,21 +44,21 @@ class MainActivity : ComponentActivity() {
                         bottomBarColor = when (destination.route) {
                             "home" -> ErizoHubTheme.Colors.background
                             "emprende" -> ErizoHubTheme.Colors.background
-                            "chat" -> ErizoHubTheme.Colors.background
+                            "chat_selection" -> ErizoHubTheme.Colors.background
                             else -> Color(0xFFF2A74B)
                         }
 
                         bottomBarColorBackground = when (destination.route) {
                             "home" -> Color.White
                             "emprende" -> Color.White
-                            "chat" -> Color.White
+                            "chat_selection" -> Color.White
                             else -> ErizoHubTheme.Colors.background
                         }
 
                         bottomBarIcons = when (destination.route) {
                             "home" -> Color(0xFFF2A74B)
                             "emprende" -> Color(0xFFF2A74B)
-                            "chat" -> Color(0xFFF2A74B)
+                            "chat_selection" -> Color(0xFFF2A74B)
                             else -> ErizoHubTheme.Colors.background
                         }
                     }
@@ -174,7 +174,7 @@ class MainActivity : ComponentActivity() {
                             NavigationBarItem(
                                 selected = selectedItem == 2,
                                 onClick = {
-                                    myNavController.navigate("chat") {
+                                    myNavController.navigate("chat_selection") {
                                         popUpTo(myNavController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
@@ -223,11 +223,19 @@ class MainActivity : ComponentActivity() {
                             composable("emprende") {
                                 EmprendeScreen(myNavController)
                             }
-                            composable("chat") {
-                                ChatScreen(myNavController)
+                            composable("chat_selection") {
+                                ChatSelectionScreen(myNavController)
+                            }
+                            composable("user_selection_screen") {
+                                UserSelectionScreen(myNavController)
                             }
                             composable("userscreen") {
                                 UserScreen(myNavController)
+                            }
+                            composable("chat_screen/{chatId}/{otherUserId}") { backStackEntry ->
+                                val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
+                                val otherUserId = backStackEntry.arguments?.getString("otherUserId") ?: ""
+                                ChatScreen(chatId = chatId, otherUserId = otherUserId)
                             }
                         }
                     }

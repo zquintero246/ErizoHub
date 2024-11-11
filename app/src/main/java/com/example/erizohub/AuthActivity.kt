@@ -29,7 +29,7 @@ class AuthActivity : ComponentActivity() {
             auth = FirebaseAuth.getInstance()
 
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id)) // Asegúrate de usar el ID correcto
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build()
 

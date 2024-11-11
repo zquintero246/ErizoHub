@@ -207,7 +207,7 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                 }
                 DividerLogin(modifier = Modifier.padding(top = 20.dp, bottom = 20.dp))
                 Column{
-                    ButtonGoogleFacebook(
+                    ButtonGoogle(
                         text = "Continuar con Google",
                         logoResId = R.drawable.googleicon,
                         onClickAction = { onGoogleSignUpClick() }

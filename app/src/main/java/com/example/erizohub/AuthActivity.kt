@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -14,6 +15,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
 
 class AuthActivity : ComponentActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -70,22 +72,31 @@ class AuthActivity : ComponentActivity() {
     }
 
     private fun initializeFirebase(onInitialized: () -> Unit) {
-        FirebaseApp.initializeApp(this).also { onInitialized() }
+        FirebaseApp.initializeApp(this)?.let {
+            onInitialized()
+        }
     }
 
-    fun signUpWithGoogle() {
+
+    private fun signUpWithGoogle() {
         isSigningUp = true
         val signUpIntent = googleSignInClient.signInIntent
         googleSignInLauncher.launch(signUpIntent)
     }
 
-    fun signInWithGoogle() {
+    private fun signInWithGoogle() {
         isSigningUp = false
-        val signInIntent = googleSignInClient.signInIntent
-        googleSignInLauncher.launch(signInIntent)
+        lifecycleScope.launch {
+            try {
+                val signInIntent = googleSignInClient.signInIntent
+                googleSignInLauncher.launch(signInIntent)
+            } catch (e: Exception) {
+                Toast.makeText(this@AuthActivity, "Error al iniciar sesión con Google", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    // Launcher para Google Sign-In
+
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -107,7 +118,6 @@ class AuthActivity : ComponentActivity() {
                 if (isSigningUp && isNewUser) {
                     saveUserDetailsToFirestore(user)
                 } else {
-                    // Navegar a la pantalla principal
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                     finish()
@@ -129,7 +139,6 @@ class AuthActivity : ComponentActivity() {
             db.collection("users").document(user.uid).set(newUser)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                    // Navegar a la pantalla principal
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                     finish()

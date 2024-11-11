@@ -73,8 +73,7 @@ dependencies {
 
     implementation (libs.firebase.auth.ktx.v2211)
     implementation (libs.firebase.firestore.ktx.v2471)
-    implementation (libs.play.services.auth.v2050)
-
+    implementation (libs.play.services.auth.v2060)
 }
 
 

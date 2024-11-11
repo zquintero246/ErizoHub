@@ -4,6 +4,7 @@ coilCompose = "3.0.0-rc01"
 firebaseAuthKtxVersion = "22.1.1"
 firebaseBom = "33.5.1"
 firebaseFirestoreKtxVersion = "24.7.1"
+googlePlayServicesAuth = "20.6.0"
 kotlin = "2.0.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -20,6 +21,7 @@ navigationRuntimeKtx = "2.8.3"
 firebaseAuth = "23.1.0"
 playServicesAuth = "21.2.0"
 playServicesAuthVersion = "20.5.0"
+playServicesProviderinstaller = "17.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,6 +54,8 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 play-services-auth-v2050 = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuthVersion" }
+play-services-auth-v2060 = { module = "com.google.android.gms:play-services-auth", version.ref = "googlePlayServicesAuth" }
+play-services-providerinstaller = { module = "com.google.android.gms:play-services-providerinstaller", version.ref = "playServicesProviderinstaller" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

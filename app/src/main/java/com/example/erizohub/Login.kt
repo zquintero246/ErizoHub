@@ -52,7 +52,7 @@ fun DividerLogin(modifier: Modifier) {
 
 
 @Composable
-fun ButtonGoogleFacebook(
+fun ButtonGoogle(
     text: String,
     logoResId: Int,
     onClickAction: () -> Unit
@@ -256,7 +256,7 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
             }
             DividerLogin(Modifier)
             Column {
-                ButtonGoogleFacebook(
+                ButtonGoogle(
                     text = "Iniciar sesión con Google",
                     logoResId = R.drawable.googleicon,
                     onClickAction = { onGoogleSignInClick() }

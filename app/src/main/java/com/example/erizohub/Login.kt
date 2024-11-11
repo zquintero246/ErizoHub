@@ -40,6 +40,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 
 @Composable
 fun DividerLogin(modifier: Modifier) {
@@ -108,19 +111,21 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
     var passwordInput by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-
     val auth = FirebaseAuth.getInstance()
+    val scrollState = rememberScrollState() // Estado de scroll
 
-
-    Column (modifier = Modifier
-        .background(color = ErizoHubTheme.Colors.background)
-        .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ){
-        Column(modifier = Modifier
+    Column(
+        modifier = Modifier
             .background(color = ErizoHubTheme.Colors.background)
-            .fillMaxWidth()
-            .height(300.dp),
+            .fillMaxSize()
+            .verticalScroll(scrollState), // Añadir scroll a la columna
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Column(
+            modifier = Modifier
+                .background(color = ErizoHubTheme.Colors.background)
+                .fillMaxWidth()
+                .height(300.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
         ) {
@@ -132,11 +137,12 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
                 color = ErizoHubTheme.Colors.primary
             )
         }
-        Column (modifier = Modifier
-            .fillMaxWidth()
-            .width(648.dp)
-            .background(Color.White, shape = RoundedCornerShape(topStart=30.dp,topEnd=30.dp))
-            .padding(top = 50.dp),
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .width(648.dp)
+                .background(Color.White, shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+                .padding(top = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(23.dp)
         ) {
@@ -145,14 +151,15 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
                     containerColor = ErizoHubTheme.Colors.textField,
                 ),
                 value = emailInput,
-                onValueChange = {emailInput = it},
-                label = { Text("email",
-                    color = ErizoHubTheme.Colors.textFieldText,
-                    fontFamily = customFontFamily,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontSize = 10.sp
-                )
-
+                onValueChange = { emailInput = it },
+                label = {
+                    Text(
+                        "email",
+                        color = ErizoHubTheme.Colors.textFieldText,
+                        fontFamily = customFontFamily,
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        fontSize = 10.sp
+                    )
                 },
                 modifier = Modifier
                     .height(61.dp)
@@ -160,16 +167,16 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
                     .clip(RoundedCornerShape(50.dp))
                     .background(color = ErizoHubTheme.Colors.textField)
                     .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
-
             )
             TextField(
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = ErizoHubTheme.Colors.textField,
                 ),
                 value = passwordInput,
-                onValueChange = {passwordInput = it},
+                onValueChange = { passwordInput = it },
                 label = {
-                    Text("Contraseña",
+                    Text(
+                        "Contraseña",
                         color = ErizoHubTheme.Colors.textFieldText,
                         fontFamily = customFontFamily,
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -184,12 +191,19 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
                     .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
             )
         }
-        Row(modifier = Modifier.fillMaxWidth().background(Color.White), horizontalArrangement = Arrangement.End){
-            Button(onClick = {}, modifier = Modifier
-                .width(250.dp)
-                .height(40.dp)
-                .padding(top = 10.dp),
-                colors= ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .width(250.dp)
+                    .height(40.dp)
+                    .padding(top = 10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
                 Text(
                     text = "Olvidaste la contraseña?",
@@ -200,37 +214,36 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
                 )
             }
         }
-        Column(modifier = Modifier
-            .background(Color.White)
-            .fillMaxSize(),
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally,){
-
-            Button(onClick = {
-                if (emailInput.isEmpty() || passwordInput.isEmpty()) {
-                    Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()
-                } else {
-                    auth.signInWithEmailAndPassword(emailInput, passwordInput)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                // Iniciar MainActivity tras inicio de sesión exitoso
-                                val intent = Intent(context, MainActivity::class.java)
-                                context.startActivity(intent)
-                                (context as Activity).finish() // Cierra AuthActivity
-                            } else {
-                                Toast.makeText(context, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Button(
+                onClick = {
+                    if (emailInput.isEmpty() || passwordInput.isEmpty()) {
+                        Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()
+                    } else {
+                        auth.signInWithEmailAndPassword(emailInput, passwordInput)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    val intent = Intent(context, MainActivity::class.java)
+                                    context.startActivity(intent)
+                                    (context as Activity).finish()
+                                } else {
+                                    Toast.makeText(context, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
+                                }
                             }
-                        }
-                }
-            },
+                    }
+                },
                 modifier = Modifier
-                    .padding(top = 20.dp)
+                    .padding(top = 20.dp, bottom = 20.dp)
                     .width(367.dp)
                     .height(61.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black
-                ),
-            ){
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+            ) {
                 Text(
                     text = "Iniciar Sesión",
                     color = ErizoHubTheme.Colors.primary,
@@ -239,14 +252,13 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
                 )
             }
 
-            Button(onClick = {navController.navigate("register")},
+            Button(
+                onClick = { navController.navigate("register") },
                 modifier = Modifier
                     .width(367.dp)
                     .height(61.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black
-                ),
-            ){
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+            ) {
                 Text(
                     text = "Registrarse",
                     color = ErizoHubTheme.Colors.primary,

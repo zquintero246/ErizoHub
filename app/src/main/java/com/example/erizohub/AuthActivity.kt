@@ -61,6 +61,9 @@ class AuthActivity : ComponentActivity() {
                             onGoogleSignUpClick = { signUpWithGoogle() }
                         )
                     }
+                    composable("profile") {
+                        Perfil(navController = myController)
+                    }
                 }
             }
         }

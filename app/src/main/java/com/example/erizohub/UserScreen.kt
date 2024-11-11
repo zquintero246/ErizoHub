@@ -59,7 +59,7 @@ fun UserScreen(navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
     var urlText by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth().background(color = Color.White).padding(0.dp, 0.dp, 0.dp, 0.dp)) {
 
 
         Button(
@@ -112,11 +112,11 @@ fun UserScreen(navController: NavController) {
             Column(horizontalAlignment = Alignment.CenterHorizontally,modifier=Modifier.fillMaxSize().padding(top= 40.dp)) {
 
                 Spacer(modifier=  Modifier.height(25.dp))
-                HorizontalDivider(modifier = Modifier.width(325.dp))
+                HorizontalDivider(modifier = Modifier.width(325.dp), color = Color(0xFFCCB5E2))
 
                 Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
                     Row(horizontalArrangement = Arrangement.SpaceBetween,modifier=Modifier.width(280.dp)) {
-                        Text(text="Emprendimientos Activos")
+                        Text(text="Emprendimientos Activos", color = Color(0xFFCCB5E2))
                         Spacer(modifier=  Modifier.width(0.dp))
                         Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Menu")
 
@@ -125,11 +125,11 @@ fun UserScreen(navController: NavController) {
 
                 }
 
-                HorizontalDivider(modifier = Modifier.width(325.dp))
+                HorizontalDivider(modifier = Modifier.width(325.dp), color = Color(0xFFCCB5E2))
 
                 Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
                     Row(horizontalArrangement = Arrangement.SpaceBetween,modifier=Modifier.width(280.dp)) {
-                        Text(text="Servicios Pagados")
+                        Text(text="Servicios Pagados", color = Color(0xFFCCB5E2))
                         Spacer(modifier=  Modifier.width(0.dp))
                         Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Menu")
 
@@ -138,11 +138,11 @@ fun UserScreen(navController: NavController) {
 
                 }
 
-                HorizontalDivider(modifier = Modifier.width(325.dp))
+                HorizontalDivider(modifier = Modifier.width(325.dp), color = Color(0xFFCCB5E2))
 
                 Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)) {
                     Row(horizontalArrangement = Arrangement.SpaceBetween,modifier=Modifier.width(280.dp)) {
-                        Text(text="Historial")
+                        Text(text="Historial", color = Color(0xFFCCB5E2))
                         Spacer(modifier=  Modifier.width(0.dp))
                         Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Menu")
 
@@ -150,86 +150,24 @@ fun UserScreen(navController: NavController) {
 
 
                 }
-                HorizontalDivider(modifier = Modifier.width(325.dp))
+                HorizontalDivider(modifier = Modifier.width(325.dp), color = Color(0xFFCCB5E2))
 
                 Spacer(modifier=  Modifier.height(25.dp))
 
-                Text(text= "Promedio de Calificacion")
-                Text(text= "0.0")
+                Text(text= "Promedio de Calificacion" , color = Color(0xFFCCB5E2))
+                Text(text= "0.0", color = Color(0xFFCCB5E2))
 
                 Spacer(modifier=  Modifier.height(40.dp))
 
-                Row(horizontalArrangement = Arrangement.SpaceBetween,modifier=Modifier.width(325.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(text="Calificar:",color=Color.White)
-                    Button(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
-                        modifier = Modifier.size(30.dp),
-                        contentPadding = PaddingValues(0.dp) // Esto elimina el padding interno
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Star,
-                            contentDescription = "Star",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    Button(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
-                        modifier = Modifier.size(30.dp),
-                        contentPadding = PaddingValues(0.dp) // Esto elimina el padding interno
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = "Star",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    Button(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
-                        modifier = Modifier.size(30.dp),
-                        contentPadding = PaddingValues(0.dp) // Esto elimina el padding interno
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = "Star",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    Button(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
-                        modifier = Modifier.size(30.dp),
-                        contentPadding = PaddingValues(0.dp) // Esto elimina el padding interno
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = "Star",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    Button(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
-                        modifier = Modifier.size(30.dp),
-                        contentPadding = PaddingValues(0.dp) // Esto elimina el padding interno
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = "Star",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
 
-                }
 
 
 
 
 
             }
-            // Contenido de la Row
+
+
         }
     }
 }

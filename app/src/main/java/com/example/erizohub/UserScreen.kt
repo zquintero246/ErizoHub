@@ -50,12 +50,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 
 
-@Preview(showSystemUi = true)
 @Composable
-fun UserPerfil() {
+fun UserScreen(navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
     var urlText by remember { mutableStateOf("") }
 

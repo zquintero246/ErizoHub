@@ -235,7 +235,7 @@ class MainActivity : ComponentActivity() {
                                 UserScreen(myNavController)
                             }
                             composable("emprendimientos_activos") {
-                                EmpredimientosActivos(myNavController)
+                                EmprendimientosActivos(myNavController)
                             }
                             composable(
                                 "emprendimientoScreen/{nombreEmprendimiento}",

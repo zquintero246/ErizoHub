@@ -30,6 +30,7 @@ import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmprendeScreen(navController: NavController) {

@@ -251,30 +251,7 @@ fun UserScreen(navController: NavController) {
                         fontWeight = FontWeight.Normal,
                         fontFamily = ErizoHubTheme.Fonts.customFontFamily,
                         fontSize = 15.sp,
-                        text="Servicios Pagados"
-                    )
-                    Spacer(modifier=  Modifier.width(0.dp))
-                    Icon(
-                        modifier = Modifier.alpha(0.5f),
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = "Menu")
-
-                }
-            }
-
-            HorizontalDivider(modifier = Modifier.width(325.dp).alpha(0.5f))
-
-            Button(onClick = { /*TODO*/ },
-                modifier = Modifier.padding(top = 11.dp, bottom = 11.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9))) {
-                Row(horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier=Modifier.width(280.dp)) {
-                    Text(
-                        modifier = Modifier.alpha(0.5f),
-                        fontWeight = FontWeight.Normal,
-                        fontFamily = ErizoHubTheme.Fonts.customFontFamily,
-                        fontSize = 15.sp,
-                        text="Historial"
+                        text="Seguidos"
                     )
                     Spacer(modifier=  Modifier.width(0.dp))
                     Icon(

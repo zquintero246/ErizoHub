@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,6 +43,7 @@ import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.focus.focusModifier
 
 
 @Composable
@@ -267,13 +269,21 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
                 )
             }
             DividerLogin(Modifier)
-            Column {
+
+            Spacer(modifier = Modifier.height(65.dp))
+
+            Column (modifier = Modifier
+                .fillMaxHeight()
+                .background(Color.White),
+                verticalArrangement = Arrangement.Bottom,
+                ) {
                 ButtonGoogle(
                     text = "Iniciar sesión con Google",
                     logoResId = R.drawable.googleicon,
                     onClickAction = { onGoogleSignInClick() }
                 )
             }
+
         }
     }
 }

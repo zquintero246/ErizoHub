@@ -13,12 +13,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -47,6 +50,25 @@ fun EmprendeScreen(navController: NavController) {
             .background(Color.White)
             .verticalScroll(scrollState)
     ) {
+
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ){
+            Text(
+                modifier = Modifier.alpha(1f),
+                textAlign = TextAlign.Center,
+                fontFamily = customFontFamily,
+                fontSize = 26.sp,
+                color = ErizoHubTheme.Colors.primary,
+                text = "Crea tu emprendimiento"
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
         Row(
             modifier = Modifier
                 .height(250.dp)
@@ -117,18 +139,19 @@ fun EmprendeScreen(navController: NavController) {
                         "Nombre del Emprendimiento",
                         color = ErizoHubTheme.Colors.textFieldText,
                         fontFamily = customFontFamily,
-                        fontSize = 10.sp
+                        fontSize = 20.sp,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
                     )
                 },
                 colors = TextFieldDefaults.textFieldColors(
-                    containerColor = ErizoHubTheme.Colors.textField,
+                    containerColor = Color.White,
                 ),
                 modifier = Modifier
                     .height(61.dp)
                     .width(367.dp)
                     .clip(RoundedCornerShape(50.dp))
-                    .background(color = ErizoHubTheme.Colors.textField)
-                    .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+                    .border(1.dp, Color.Transparent, RoundedCornerShape(50.dp))
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -152,7 +175,7 @@ fun EmprendeScreen(navController: NavController) {
                     .width(367.dp)
                     .clip(RoundedCornerShape(50.dp))
                     .background(color = ErizoHubTheme.Colors.textField)
-                    .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+                    .border(1.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -161,7 +184,7 @@ fun EmprendeScreen(navController: NavController) {
                 modifier = Modifier,
                 fontFamily = customFontFamily,
                 fontSize = 20.sp,
-                color = ErizoHubTheme.Colors.background,
+                color = ErizoHubTheme.Colors.primary,
                 text = "Imágenes del Emprendimiento"
             )
 
@@ -199,7 +222,7 @@ fun EmprendeScreen(navController: NavController) {
                     .width(367.dp)
                     .clip(RoundedCornerShape(50.dp))
                     .background(color = ErizoHubTheme.Colors.textField)
-                    .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+                    .border(1.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
             )
 
             Spacer(modifier = Modifier.height(26.dp))
@@ -215,10 +238,15 @@ fun EmprendeScreen(navController: NavController) {
                 modifier = Modifier.align(Alignment.CenterHorizontally)
                     .width(225.dp)
                     .height(59.dp)
-                    .border(1.dp, Color.Gray, shape = RoundedCornerShape(30.dp))
-                    .shadow(20.dp, shape = RoundedCornerShape(30.dp)),
+                    .border(1.dp, Color.Transparent, shape = RoundedCornerShape(30.dp))
+                    .shadow(10.dp, shape = RoundedCornerShape(30.dp)),
             ) {
-                Text("Añadir Imagen")
+                Text(
+                    modifier = Modifier,
+                    fontFamily = customFontFamily,
+                    fontSize = 15.sp,
+                    text = "Añadir Imagen"
+                )
             }
 
             Spacer(modifier = Modifier.height(36.dp))
@@ -245,14 +273,20 @@ fun EmprendeScreen(navController: NavController) {
                         Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Gray),
+                colors = ButtonDefaults.buttonColors(containerColor = ErizoHubTheme.Colors.primary, contentColor = Color.White),
                 modifier = Modifier    .align(Alignment.CenterHorizontally)
                     .width(225.dp)
                     .height(59.dp)
-                    .border(1.dp, Color.Gray, shape = RoundedCornerShape(30.dp))
-                    .shadow(20.dp, shape = RoundedCornerShape(30.dp)),
-            ) {
-                Text("Guardar Emprendimiento")
+                    .border(1.dp, Color.Transparent, shape = RoundedCornerShape(30.dp))
+                    .shadow(10.dp, shape = RoundedCornerShape(30.dp)),
+
+                ) {
+                Text(
+                    modifier = Modifier.alpha(1f),
+                    fontFamily = customFontFamily,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 12.sp,
+                    text = "Guardar Emprendimiento")
             }
         }
     }

@@ -90,7 +90,6 @@ fun EmprendimientosActivos(navController: NavController) {
         ) {
             items(listEmprendimientos.value.size) { index ->
                 EmprendimientoItem(myEmprendimiento = listEmprendimientos.value[index]) {
-                    // Navegar a la pantalla de detalles del emprendimiento al hacer clic
                     navController.navigate("emprendimientoScreen/${listEmprendimientos.value[index].nombre_emprendimiento}")
                 }
             }

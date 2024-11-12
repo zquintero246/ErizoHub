@@ -234,6 +234,9 @@ class MainActivity : ComponentActivity() {
                             composable("userscreen") {
                                 UserScreen(myNavController)
                             }
+                            composable("emprendimientos_activos") {
+                                EmprendimientosActivos(myNavController)
+                            }
                             composable(
                                 "emprendimientoScreen/{nombreEmprendimiento}",
                                 arguments = listOf(navArgument("nombreEmprendimiento") { type = NavType.StringType })

@@ -106,69 +106,6 @@ fun EmprendeScreen(navController: NavController) {
 
         }
 
-<<<<<<< Updated upstream
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
-            value = nombreEmprendimiento,
-            onValueChange = { nombreEmprendimiento = it },
-            label = { Text("Nombre del Emprendimiento") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(
-            value = descripcionEmprendimiento,
-            onValueChange = { descripcionEmprendimiento = it },
-            label = { Text("Descripción") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("Imágenes del Emprendimiento")
-        LazyRow {
-            items(imagenes.size) { index ->
-                AsyncImage(
-                    model = imagenes[index],
-                    contentDescription = "Imagen $index",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(4.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
-            value = urlText,
-            onValueChange = { urlText = it },
-            label = { Text("Añadir URL de Imagen") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Button(
-            onClick = {
-                if (urlText.isNotBlank()) {
-                    imagenes.add(urlText)
-                    urlText = ""
-                }
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White)
-        ) {
-            Text("Añadir Imagen")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                if (user != null && nombreEmprendimiento.isNotBlank() && descripcionEmprendimiento.isNotBlank()) {
-                    val emprendimientoData = hashMapOf(
-                        "nombre_emprendimiento" to nombreEmprendimiento,
-                        "descripcion" to descripcionEmprendimiento,
-                        "imagenEmprendimiento" to imagenPerfilEmprendimiento,
-                        "imagenes" to imagenes
-=======
         Column(modifier = Modifier
             .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,) {
@@ -238,7 +175,6 @@ fun EmprendeScreen(navController: NavController) {
                         modifier = Modifier
                             .size(100.dp)
                             .padding(4.dp)
->>>>>>> Stashed changes
                     )
                 }
             }

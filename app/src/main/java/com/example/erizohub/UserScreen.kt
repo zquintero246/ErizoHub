@@ -217,7 +217,7 @@ fun UserScreen(navController: NavController) {
             }
             HorizontalDivider(modifier = Modifier.width(325.dp).padding(top = 10.dp).alpha(0.5f))
 
-            Button(onClick = { /*TODO*/ },
+            Button(onClick = { navController.navigate("emprendimientos_activos")},
                 modifier = Modifier.padding(top = 11.dp, bottom = 11.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9))
             ) {

@@ -154,14 +154,12 @@ fun ChatScreen(chatId: String, otherUserId: String) {
     var messageText by remember { mutableStateOf("") }
     var otherUser by remember { mutableStateOf<User?>(null) }
 
-    // Obtener información del usuario destinatario
     LaunchedEffect(otherUserId) {
         db.collection("users").document(otherUserId).get().addOnSuccessListener { document ->
             otherUser = document.toObject(User::class.java)
         }
     }
 
-    // Obtener mensajes en tiempo real
     LaunchedEffect(chatId) {
         db.collection("chats").document(chatId).collection("messages")
             .orderBy("timestamp")

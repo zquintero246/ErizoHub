@@ -45,8 +45,6 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
     var nameUserinput by remember { mutableStateOf("") }
     var profilepictureinput by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var passwordConfirmation by remember { mutableStateOf("") }
-    var registerError by remember { mutableStateOf<String?>(null) }
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
     val context = LocalContext.current
@@ -165,7 +163,6 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                     auth.createUserWithEmailAndPassword(emailinput, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                // Guardar datos en Firestore
                                 val user = auth.currentUser
                                 val newUser = User (
                                     userName = nameUserinput,

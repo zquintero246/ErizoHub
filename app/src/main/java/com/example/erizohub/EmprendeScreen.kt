@@ -37,7 +37,6 @@ fun EmprendeScreen(navController: NavController) {
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        // Espacio para la imagen de perfil del emprendimiento
         Row(
             modifier = Modifier
                 .height(250.dp)
@@ -66,7 +65,6 @@ fun EmprendeScreen(navController: NavController) {
                     )
                 }
 
-                // Menú desplegable para ingresar la URL de la imagen de perfil
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
@@ -98,7 +96,6 @@ fun EmprendeScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo para ingresar el nombre del emprendimiento
         TextField(
             value = nombreEmprendimiento,
             onValueChange = { nombreEmprendimiento = it },
@@ -108,7 +105,6 @@ fun EmprendeScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo para ingresar la descripción del emprendimiento
         TextField(
             value = descripcionEmprendimiento,
             onValueChange = { descripcionEmprendimiento = it },
@@ -118,7 +114,6 @@ fun EmprendeScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Espacio para agregar múltiples imágenes
         Text("Imágenes del Emprendimiento")
         LazyRow {
             items(imagenes.size) { index ->
@@ -152,7 +147,6 @@ fun EmprendeScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para guardar el emprendimiento en Firestore
         Button(
             onClick = {
                 if (user != null && nombreEmprendimiento.isNotBlank() && descripcionEmprendimiento.isNotBlank()) {

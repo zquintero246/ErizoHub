@@ -112,13 +112,13 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
 
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
-    val scrollState = rememberScrollState() // Estado de scroll
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .background(color = ErizoHubTheme.Colors.background)
             .fillMaxSize()
-            .verticalScroll(scrollState), // Añadir scroll a la columna
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(

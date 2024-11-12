@@ -85,7 +85,6 @@ fun HomeScreen(navController: NavController) {
 
     LaunchedEffect(user) {
         user?.let { currentUser ->
-            // Obtener el nombre del usuario
             db.collection("users").document(currentUser.uid).get().addOnSuccessListener { document ->
                 if (document.exists()) {
                     userName = document.getString("userName") ?: ""
@@ -93,7 +92,6 @@ fun HomeScreen(navController: NavController) {
             }
         }
 
-        // Obtener los emprendimientos de todos los usuarios
         db.collectionGroup("emprendimientos").get().addOnSuccessListener { response ->
             val emprendimientos = response.documents.map { document ->
                 Emprendimiento(
@@ -131,12 +129,10 @@ fun HomeScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(10.dp))
             SearchField { query ->
-                val queryLowercase = query.lowercase() // Convertir la búsqueda del usuario a minúsculas
+                val queryLowercase = query.lowercase()
                 if (queryLowercase.isEmpty()) {
-                    // Mostrar todos los emprendimientos si la barra de búsqueda está vacía
                     filteredEmprendimientos.value = listEmprendimientos.value
                 } else {
-                    // Filtrar los emprendimientos basándose en la búsqueda en minúsculas
                     filteredEmprendimientos.value = listEmprendimientos.value.filter {
                         it.nombre_emprendimiento.contains(queryLowercase, ignoreCase = true)
                     }
@@ -162,7 +158,6 @@ fun HomeScreen(navController: NavController) {
             ) {
                 items(filteredEmprendimientos.value.size) { index ->
                     EmprendimientoItem(myEmprendimiento = filteredEmprendimientos.value[index]) {
-                        // Navegar a la EmprendimientoScreen con los datos del emprendimiento seleccionado
                         navController.navigate("emprendimientoScreen/${filteredEmprendimientos.value[index].nombre_emprendimiento}")
                     }
                 }
@@ -179,7 +174,7 @@ fun EmprendimientoItem(myEmprendimiento: Emprendimiento, onClick: () -> Unit) {
             .padding(8.dp)
             .shadow(5.dp, shape = RoundedCornerShape(20.dp))
             .border(1.dp, Color.Transparent, RoundedCornerShape(20.dp))
-            .clickable { onClick() }, // Agrega la acción de clic aquí
+            .clickable { onClick() },
         shape = RoundedCornerShape(20.dp)
     ) {
         Row(
@@ -210,7 +205,7 @@ fun EmprendimientoItem(myEmprendimiento: Emprendimiento, onClick: () -> Unit) {
                     color = ErizoHubTheme.Colors.background,
                     modifier = Modifier
                         .padding(bottom = 4.dp)
-                        .clickable { onClick() } // Clic en el nombre para navegar
+                        .clickable { onClick() }
                 )
                 val shortenedDescription = if (myEmprendimiento.descripcion.length > 50) {
                     "${myEmprendimiento.descripcion.take(100)}..."

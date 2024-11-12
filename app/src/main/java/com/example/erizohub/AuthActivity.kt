@@ -131,6 +131,7 @@ class AuthActivity : ComponentActivity() {
     private fun saveUserDetailsToFirestore(user: FirebaseUser?) {
         user?.let {
             val newUser = hashMapOf(
+                "userId" to user.uid,
                 "userName" to (user.displayName ?: ""),
                 "email" to user.email,
                 "profilePictureUrl" to (user.photoUrl?.toString() ?: "")

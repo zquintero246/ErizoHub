@@ -1,5 +1,6 @@
 package com.example.erizohub
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -156,30 +158,48 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally,){
 
-                Button( onClick = {if (nameUserinput.isEmpty()
-                    || emailinput.isEmpty() || password.isEmpty()){
-                    Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()
-                }else{
-                    auth.createUserWithEmailAndPassword(emailinput, password)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val user = auth.currentUser
-                                val newUser = User (
-                                    userName = nameUserinput,
-                                    emailc = emailinput,
-                                    profilePictureUrl = profilepictureinput,
-                                    )
-                                db.collection("users").document(user!!.uid).set(newUser)
-                                Toast.makeText(context, "Se guardo correctamente",Toast.LENGTH_SHORT).show()
-                                navController.navigate("login")
+                // Botón de registro con manejo de errores detallado
+                Button(onClick = {
+                    if (nameUserinput.isEmpty() || emailinput.isEmpty() || password.isEmpty()) {
+                        Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()
+                    } else {
+                        auth.createUserWithEmailAndPassword(emailinput, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    val user = auth.currentUser
+                                    if (user != null) {
+                                        val newUser = User(
+                                            userId = user.uid,
+                                            userName = nameUserinput,
+                                            emailc = emailinput,
+                                            profilePictureUrl = profilepictureinput
+                                        )
+                                        db.collection("users").document(user.uid).set(newUser)
+                                            .addOnSuccessListener {
+                                                Toast.makeText(context, "Se guardó correctamente", Toast.LENGTH_SHORT).show()
+                                                // Limpiar campos de entrada después de registro exitoso
+                                                nameUserinput = ""
+                                                emailinput = ""
+                                                password = ""
+                                                profilepictureinput = ""
+                                                navController.navigate("login")
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Toast.makeText(context, "Error al guardar datos: ${e.message}", Toast.LENGTH_SHORT).show()
+                                            }
+                                    }
                                 } else {
-                                    Toast.makeText(context, "Error al registrar usuario",Toast.LENGTH_SHORT).show()
+                                    if (task.exception is FirebaseAuthUserCollisionException) {
+                                        Toast.makeText(context, "Este correo ya está registrado. Intente iniciar sesión.", Toast.LENGTH_LONG).show()
+                                        navController.navigate("login")
+                                    } else {
+                                        val errorMessage = task.exception?.message ?: "Error desconocido"
+                                        Toast.makeText(context, "Error al registrar usuario: $errorMessage", Toast.LENGTH_LONG).show()
+                                        Log.e("AuthError", "Error al registrar usuario", task.exception)
+                                    }
                                 }
                             }
-
-                }
-
-
+                    }
                 },
                     modifier = Modifier
                         .padding(top = 29.dp)
@@ -188,7 +208,7 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Black
                     ),
-                ){
+                ) {
                     Text(
                         text = "Registrarse",
                         color = ErizoHubTheme.Colors.primary,
@@ -196,6 +216,7 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                         fontSize = 20.sp
                     )
                 }
+
                 DividerLogin(modifier = Modifier.padding(top = 20.dp, bottom = 20.dp))
                 Column{
                     ButtonGoogle(

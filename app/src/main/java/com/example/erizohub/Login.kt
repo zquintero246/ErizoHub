@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,7 +42,6 @@ import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.focus.focusModifier
 
 
 @Composable
@@ -127,7 +125,7 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
             modifier = Modifier
                 .background(color = ErizoHubTheme.Colors.background)
                 .fillMaxWidth()
-                .height(300.dp),
+                .height(250.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
         ) {
@@ -143,11 +141,11 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
             modifier = Modifier
                 .fillMaxWidth()
                 .width(648.dp)
-                .background(Color.White, shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
-                .padding(top = 50.dp),
+                .background(Color.White, shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(23.dp)
         ) {
+            Spacer(Modifier.height(30.dp))
             TextField(
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = ErizoHubTheme.Colors.textField,
@@ -268,15 +266,14 @@ fun IniciarSesion(navController: NavController, onGoogleSignInClick: () -> Unit)
                     fontSize = 20.sp
                 )
             }
+
+            Spacer(modifier = Modifier.height(60.dp))
+
             DividerLogin(Modifier)
 
-            Spacer(modifier = Modifier.height(65.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
-            Column (modifier = Modifier
-                .fillMaxHeight()
-                .background(Color.White),
-                verticalArrangement = Arrangement.Bottom,
-                ) {
+            Column () {
                 ButtonGoogle(
                     text = "Iniciar sesión con Google",
                     logoResId = R.drawable.googleicon,

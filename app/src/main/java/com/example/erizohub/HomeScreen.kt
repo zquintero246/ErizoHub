@@ -1,5 +1,6 @@
 package com.example.erizohub
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,8 +33,9 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
 fun getFirstWord(text: String): String {
-    return text.split("").firstOrNull() ?: ""
+    return text.split(" ").firstOrNull() ?: ""
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,17 +79,22 @@ fun SearchField(onSearchTextChanged: (String) -> Unit) {
 @Composable
 fun HomeScreen(navController: NavController) {
     var userName by remember { mutableStateOf("") }
+    val primerNombre by remember { derivedStateOf { getFirstWord(userName) } }
     val listEmprendimientos = remember { mutableStateOf<List<Emprendimiento>>(emptyList()) }
     val filteredEmprendimientos = remember { mutableStateOf<List<Emprendimiento>>(emptyList()) }
     val user = FirebaseAuth.getInstance().currentUser
     val db = Firebase.firestore
-    val primerNombre = getFirstWord(userName)
+
+    Log.d("HomeScreen", "Primer nombre: $primerNombre")
 
     LaunchedEffect(user) {
         user?.let { currentUser ->
             db.collection("users").document(currentUser.uid).get().addOnSuccessListener { document ->
                 if (document.exists()) {
                     userName = document.getString("userName") ?: ""
+                    Log.d("HomeScreen", "User name: $userName")
+                } else {
+                    Log.d("HomeScreen", "No se encontró el usuario en Firestore")
                 }
             }
         }
@@ -95,7 +102,7 @@ fun HomeScreen(navController: NavController) {
         db.collectionGroup("emprendimientos").get().addOnSuccessListener { response ->
             val emprendimientos = response.documents.map { document ->
                 Emprendimiento(
-                    nombre_emprendimiento = document.getString("nombre_emprendimiento")?.lowercase() ?: "", // Convertir a minúsculas
+                    nombre_emprendimiento = document.getString("nombre_emprendimiento")?.lowercase() ?: "",
                     descripcion = document.getString("descripcion") ?: "",
                     imagenEmprendimiento = document.getString("imagenEmprendimiento") ?: "",
                     imagenes = document.get("imagenes") as List<String>? ?: emptyList()
@@ -106,13 +113,14 @@ fun HomeScreen(navController: NavController) {
             filteredEmprendimientos.value = listEmprendimientos.value
         }
     }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -123,7 +131,7 @@ fun HomeScreen(navController: NavController) {
             Text(
                 color = ErizoHubTheme.Colors.primary,
                 text = "Bienvenido $primerNombre!",
-                fontSize = 27.sp,
+                fontSize = 24.sp,
                 fontFamily = customFontFamily,
                 textAlign = TextAlign.Start
             )

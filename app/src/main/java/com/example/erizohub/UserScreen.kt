@@ -191,10 +191,9 @@ fun UserScreen(navController: NavController) {
             Button(
                 onClick = {
                     if (isEditingProfile) {
-                        // Guardar cambios
                         updateUserName(userName)
                     }
-                    isEditingProfile = !isEditingProfile // Cambiar el estado de edición
+                    isEditingProfile = !isEditingProfile
                 },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

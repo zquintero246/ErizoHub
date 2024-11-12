@@ -191,12 +191,10 @@ fun UserScreen(navController: NavController) {
             Button(
                 onClick = {
                     if (isEditingProfile) {
-                        if (urlText.isNotEmpty()) {
-                            updateProfilePictureUrl(urlText)
-                        }
+                        // Guardar cambios
                         updateUserName(userName)
                     }
-                    isEditingProfile = !isEditingProfile
+                    isEditingProfile = !isEditingProfile // Cambiar el estado de edición
                 },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -217,7 +215,6 @@ fun UserScreen(navController: NavController) {
                     text = if (isEditingProfile) "Guardar" else "Editar Perfil"
                 )
             }
-
             HorizontalDivider(modifier = Modifier.width(325.dp).padding(top = 10.dp).alpha(0.5f))
 
             Button(onClick = { /*TODO*/ },

@@ -1,23 +1,33 @@
 package com.example.erizohub
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmprendeScreen(navController: NavController) {
     val context = LocalContext.current
@@ -34,8 +44,8 @@ fun EmprendeScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .verticalScroll(scrollState)
-            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier
@@ -44,24 +54,25 @@ fun EmprendeScreen(navController: NavController) {
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(
-                onClick = { expanded = !expanded },
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
+                    .clickable { expanded = !expanded },
+                contentAlignment = Alignment.Center
             ) {
                 if (imagenPerfilEmprendimiento.isNotEmpty()) {
                     AsyncImage(
                         model = imagenPerfilEmprendimiento,
                         contentDescription = "Imagen de perfil del emprendimiento",
-                        modifier = Modifier.size(150.dp)
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
                     )
                 } else {
                     Image(
                         painter = painterResource(id = R.drawable.profile),
                         contentDescription = "profile",
-                        modifier = Modifier.size(150.dp)
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit
                     )
                 }
 
@@ -92,8 +103,10 @@ fun EmprendeScreen(navController: NavController) {
                     }
                 }
             }
+
         }
 
+<<<<<<< Updated upstream
         Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
@@ -155,24 +168,156 @@ fun EmprendeScreen(navController: NavController) {
                         "descripcion" to descripcionEmprendimiento,
                         "imagenEmprendimiento" to imagenPerfilEmprendimiento,
                         "imagenes" to imagenes
+=======
+        Column(modifier = Modifier
+            .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,) {
+            TextField(
+                value = nombreEmprendimiento,
+                onValueChange = { nombreEmprendimiento = it },
+                label = {
+                    Text(
+                        "Nombre del Emprendimiento",
+                        color = ErizoHubTheme.Colors.textFieldText,
+                        fontFamily = customFontFamily,
+                        fontSize = 10.sp
                     )
-                    db.collection("users").document(user.uid)
-                        .collection("emprendimientos")
-                        .add(emprendimientoData)
-                        .addOnSuccessListener {
-                            Toast.makeText(context, "Emprendimiento guardado", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(context, "Error al guardar el emprendimiento", Toast.LENGTH_SHORT).show()
-                        }
-                } else {
-                    Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = ErizoHubTheme.Colors.textField,
+                ),
+                modifier = Modifier
+                    .height(61.dp)
+                    .width(367.dp)
+                    .clip(RoundedCornerShape(50.dp))
+                    .background(color = ErizoHubTheme.Colors.textField)
+                    .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
+                value = descripcionEmprendimiento,
+                onValueChange = { descripcionEmprendimiento = it },
+                label = {
+                    Text(
+                        "Descripción",
+                        color = ErizoHubTheme.Colors.textFieldText,
+                        fontFamily = customFontFamily,
+                        fontSize = 10.sp
+                    )
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = ErizoHubTheme.Colors.textField,
+                ),
+                modifier = Modifier
+                    .height(61.dp)
+                    .width(367.dp)
+                    .clip(RoundedCornerShape(50.dp))
+                    .background(color = ErizoHubTheme.Colors.textField)
+                    .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                modifier = Modifier,
+                fontFamily = customFontFamily,
+                fontSize = 20.sp,
+                color = ErizoHubTheme.Colors.background,
+                text = "Imágenes del Emprendimiento"
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LazyRow {
+                items(imagenes.size) { index ->
+                    AsyncImage(
+                        model = imagenes[index],
+                        contentDescription = "Imagen $index",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(4.dp)
+>>>>>>> Stashed changes
+                    )
                 }
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9), contentColor = Color.White),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Guardar Emprendimiento")
+            }
+
+
+            TextField(
+                value = urlText,
+                onValueChange = { urlText = it },
+                label = {
+                    Text(
+                        "Añadir URL de Imagen",
+                        color = ErizoHubTheme.Colors.textFieldText,
+                        fontFamily = customFontFamily,
+                        fontSize = 10.sp
+                    )
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = ErizoHubTheme.Colors.textField,
+                ),
+                modifier = Modifier
+                    .height(61.dp)
+                    .width(367.dp)
+                    .clip(RoundedCornerShape(50.dp))
+                    .background(color = ErizoHubTheme.Colors.textField)
+                    .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+            )
+
+            Spacer(modifier = Modifier.height(26.dp))
+
+            Button(
+                onClick = {
+                    if (urlText.isNotBlank()) {
+                        imagenes.add(urlText)
+                        urlText = ""
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Gray) ,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+                    .width(225.dp)
+                    .height(59.dp)
+                    .border(1.dp, Color.Gray, shape = RoundedCornerShape(30.dp))
+                    .shadow(20.dp, shape = RoundedCornerShape(30.dp)),
+            ) {
+                Text("Añadir Imagen")
+            }
+
+            Spacer(modifier = Modifier.height(36.dp))
+
+            Button(
+                onClick = {
+                    if (user != null && nombreEmprendimiento.isNotBlank() && descripcionEmprendimiento.isNotBlank()) {
+                        val emprendimientoData = hashMapOf(
+                            "nombre_emprendimiento" to nombreEmprendimiento,
+                            "descripcion" to descripcionEmprendimiento,
+                            "imagenEmprendimiento" to imagenPerfilEmprendimiento,
+                            "imagenes" to imagenes
+                        )
+                        db.collection("users").document(user.uid)
+                            .collection("emprendimientos")
+                            .add(emprendimientoData)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Emprendimiento guardado", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(context, "Error al guardar el emprendimiento", Toast.LENGTH_SHORT).show()
+                            }
+                    } else {
+                        Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Gray),
+                modifier = Modifier    .align(Alignment.CenterHorizontally)
+                    .width(225.dp)
+                    .height(59.dp)
+                    .border(1.dp, Color.Gray, shape = RoundedCornerShape(30.dp))
+                    .shadow(20.dp, shape = RoundedCornerShape(30.dp)),
+            ) {
+                Text("Guardar Emprendimiento")
+            }
         }
     }
 }

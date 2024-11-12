@@ -32,7 +32,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
 fun getFirstWord(text: String): String {
-    return text.split(" ").firstOrNull() ?: ""
+    return text.split("").firstOrNull() ?: ""
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -123,9 +123,9 @@ fun HomeScreen(navController: NavController) {
             Text(
                 color = ErizoHubTheme.Colors.primary,
                 text = "Bienvenido $primerNombre!",
-                fontSize = 32.sp,
+                fontSize = 27.sp,
                 fontFamily = customFontFamily,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Start
             )
             Spacer(modifier = Modifier.height(10.dp))
             SearchField { query ->

@@ -28,10 +28,12 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,6 +48,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,6 +57,7 @@ import coil3.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserScreen(
     navController: NavController,
@@ -137,29 +141,6 @@ fun UserScreen(
                             .fillMaxSize()
                     )
                 }
-
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    TextField(
-                        value = urlText,
-                        onValueChange = { urlText = it },
-                        label = { Text("Insert URL") },
-                        modifier = Modifier.padding(16.dp)
-                    )
-                    Button(
-                        onClick = {
-                            if (urlText.isNotEmpty()) {
-                                updateProfilePictureUrl(urlText)
-                                expanded = false
-                            }
-                        },
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
-                        Text("Guardar")
-                    }
-                }
             }
 
             Row(
@@ -172,10 +153,26 @@ fun UserScreen(
                     TextField(
                         value = userName,
                         onValueChange = { userName = it },
-                        label = { Text("Nombre de Usuario") },
-                        singleLine = true,
-                        modifier = Modifier.width(200.dp)
+                        label = { Text("") },
+                        singleLine = false,
+                        modifier = Modifier
+                            .width(200.dp)
+                            .border(0.dp, Color.Transparent, shape = RoundedCornerShape(30.dp))
+                            .background(Color.Transparent),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            cursorColor = Color.Black,
+                        ),
+                        textStyle = TextStyle(
+                            fontSize = 20.sp,
+                            fontFamily = ErizoHubTheme.Fonts.customFontFamily,
+                            color = Color(0xFFB8B8B8),
+                            )
                     )
+
+
                 } else {
                     Text(
                         fontSize = 20.sp,

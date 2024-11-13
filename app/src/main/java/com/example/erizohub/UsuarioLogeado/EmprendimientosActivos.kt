@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.erizohub.ClasesBD.Emprendimiento
+import com.example.erizohub.ClasesBD.Productos
 import com.example.erizohub.InicioApp.ErizoHubTheme
 import com.example.erizohub.Home.EmprendimientoItem
 import com.google.firebase.Firebase
@@ -51,7 +52,8 @@ fun EmprendimientosActivos(navController: NavController) {
                             nombre_emprendimiento = document.getString("nombre_emprendimiento") ?: "",
                             descripcion = document.getString("descripcion") ?: "",
                             imagenEmprendimiento = document.getString("imagenEmprendimiento") ?: "",
-                            imagenes = document.get("imagenes") as List<String>? ?: emptyList()
+                            listaProductos = document.get("listaproductos") as List<Productos>? ?: emptyList(),
+                            comentarios = document.get("comentarios") as List<String>? ?: emptyList()
                         )
                     }
                     listEmprendimientos.value = emprendimientos

@@ -1,4 +1,4 @@
-package com.example.erizohub
+package com.example.erizohub.InteraccionUsuarios
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.erizohub.InicioApp.ErizoHubTheme
+import com.example.erizohub.R
 
 @Composable
 fun Perfil(navController: NavController) {

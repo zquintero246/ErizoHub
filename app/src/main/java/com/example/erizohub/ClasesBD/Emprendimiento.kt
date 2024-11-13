@@ -1,4 +1,4 @@
-package com.example.erizohub
+package com.example.erizohub.ClasesBD
 
 class Emprendimiento (
     var nombre_emprendimiento : String,

@@ -1,4 +1,4 @@
-package com.example.erizohub
+package com.example.erizohub.InicioApp
 
 import android.util.Log
 import android.widget.Toast
@@ -33,7 +33,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
+import com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily
+import com.example.erizohub.R
+import com.example.erizohub.ClasesBD.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore

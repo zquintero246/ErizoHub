@@ -1,8 +1,6 @@
 package com.example.erizohub
 
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -12,20 +10,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.erizohub.InicioApp.IniciarSesion
+import com.example.erizohub.InicioApp.LoadingScreenContent
+import com.example.erizohub.InicioApp.PreLogin
+import com.example.erizohub.InicioApp.Registrarse
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
-import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.client.http.InputStreamContent
-import com.google.api.client.json.gson.GsonFactory
-import com.google.api.services.drive.model.File
 
 class AuthActivity : ComponentActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient

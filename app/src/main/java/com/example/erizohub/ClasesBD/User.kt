@@ -1,4 +1,4 @@
-package com.example.erizohub
+package com.example.erizohub.ClasesBD
 
 data class User(
     val userId: String = "",

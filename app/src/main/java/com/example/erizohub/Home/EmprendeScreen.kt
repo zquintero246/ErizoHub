@@ -1,4 +1,4 @@
-package com.example.erizohub
+package com.example.erizohub.Home
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,7 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
+import com.example.erizohub.InicioApp.ErizoHubTheme
+import com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily
+import com.example.erizohub.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 

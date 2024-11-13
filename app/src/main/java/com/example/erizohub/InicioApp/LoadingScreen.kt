@@ -1,4 +1,4 @@
-package com.example.erizohub
+package com.example.erizohub.InicioApp
 
 
 import androidx.compose.animation.AnimatedVisibility
@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.erizohub.R
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.delay
 

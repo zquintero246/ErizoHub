@@ -1,4 +1,4 @@
-package com.example.erizohub
+package com.example.erizohub.InicioApp
 
 import android.app.Activity
 import android.content.Intent
@@ -38,10 +38,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.erizohub.ErizoHubTheme.Fonts.customFontFamily
+import com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import com.example.erizohub.MainActivity
+import com.example.erizohub.R
 
 
 @Composable

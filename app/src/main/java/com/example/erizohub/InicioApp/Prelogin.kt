@@ -1,4 +1,4 @@
-package com.example.erizohub
+package com.example.erizohub.InicioApp
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.erizohub.R
 
 @Composable
 fun PreLogin(navController: NavController, onButtonClickIniciar: () -> Unit, onButtonClickRegistrarse: () -> Unit) {

@@ -34,6 +34,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.erizohub.Home.ChatScreen
+import com.example.erizohub.Home.ChatSelectionScreen
+import com.example.erizohub.Home.EmprendeScreen
+import com.example.erizohub.Home.HomeScreen
+import com.example.erizohub.Home.UserSelectionScreen
+import com.example.erizohub.InteraccionUsuarios.EmprendimientoScreen
+import com.example.erizohub.UsuarioLogeado.EmprendimientosActivos
+import com.example.erizohub.UsuarioLogeado.UserScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -188,15 +196,15 @@ class MainActivity : ComponentActivity() {
                 val myNavController = rememberNavController()
                 var selectedItem by remember { mutableIntStateOf(0) }
                 var bottomBarColor by remember { mutableStateOf(Color(0xFFF2A74B)) }
-                var bottomBarColorBackground by remember { mutableStateOf(ErizoHubTheme.Colors.background) }
-                var bottomBarIcons by remember { mutableStateOf(ErizoHubTheme.Colors.background) }
+                var bottomBarColorBackground by remember { mutableStateOf(com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background) }
+                var bottomBarIcons by remember { mutableStateOf(com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background) }
 
                 LaunchedEffect(myNavController) {
                     myNavController.addOnDestinationChangedListener { _, destination, _ ->
                         bottomBarColor = when (destination.route) {
-                            "home" -> ErizoHubTheme.Colors.background
-                            "emprende" -> ErizoHubTheme.Colors.background
-                            "chat_selection" -> ErizoHubTheme.Colors.background
+                            "home" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            "emprende" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            "chat_selection" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                             else -> Color(0xFFF2A74B)
                         }
 
@@ -204,14 +212,14 @@ class MainActivity : ComponentActivity() {
                             "home" -> Color.White
                             "emprende" -> Color.White
                             "chat_selection" -> Color.White
-                            else -> ErizoHubTheme.Colors.background
+                            else -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                         }
 
                         bottomBarIcons = when (destination.route) {
                             "home" -> Color(0xFFF2A74B)
                             "emprende" -> Color(0xFFF2A74B)
                             "chat_selection" -> Color(0xFFF2A74B)
-                            else -> ErizoHubTheme.Colors.background
+                            else -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                         }
                     }
                 }
@@ -274,7 +282,7 @@ class MainActivity : ComponentActivity() {
                                         fontWeight = FontWeight.Normal,
                                         fontSize = 15.sp,
                                         color = bottomBarIcons,
-                                        fontFamily = ErizoHubTheme.Fonts.customFontFamily,
+                                        fontFamily = com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily,
                                         text = "Home"
                                     )
                                 },
@@ -311,7 +319,7 @@ class MainActivity : ComponentActivity() {
                                         fontWeight = FontWeight.Normal,
                                         fontSize = 15.sp,
                                         color = bottomBarIcons,
-                                        fontFamily = ErizoHubTheme.Fonts.customFontFamily,
+                                        fontFamily = com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily,
                                         text = "Emprende"
                                     )
                                 },
@@ -348,7 +356,7 @@ class MainActivity : ComponentActivity() {
                                         fontWeight = FontWeight.Normal,
                                         fontSize = 15.sp,
                                         color = bottomBarIcons,
-                                        fontFamily = ErizoHubTheme.Fonts.customFontFamily,
+                                        fontFamily = com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily,
                                         text = "Chat"
                                     )
                                 },

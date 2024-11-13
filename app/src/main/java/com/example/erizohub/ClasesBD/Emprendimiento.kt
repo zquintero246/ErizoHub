@@ -4,6 +4,7 @@ class Emprendimiento (
     var nombre_emprendimiento : String,
     var descripcion : String,
     var imagenEmprendimiento : String,
-    var imagenes: List<String>
+    var listaProductos: List<Productos>,
+    var Comentarios: List<String>
 ) {
 }

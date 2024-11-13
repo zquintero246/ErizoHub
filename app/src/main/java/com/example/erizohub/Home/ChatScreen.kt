@@ -1,21 +1,29 @@
 package com.example.erizohub.Home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.erizohub.ClasesBD.User
+import com.example.erizohub.InicioApp.ErizoHubTheme
+import com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -95,33 +103,62 @@ fun ChatSelectionScreen(navController: NavController) {
             }
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color(0xFFF7F4FF))) {
-        Text(
-            text = "CHATS",
-            modifier = Modifier.padding(16.dp),
-            fontSize = 24.sp,
-            color = Color(0xFF6200EE)
-        )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(ErizoHubTheme.Colors.background)
+    ) {
 
-        LazyColumn {
-            items(chatList.size) { index ->
-                val chat = chatList[index]
-                ChatListItem(chat = chat) {
-                    navController.navigate("chat_screen/${chat.chatId}/${chat.otherUserId}")
+        Column (Modifier
+            .fillMaxWidth()
+            .background(ErizoHubTheme.Colors.background),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "CHATS",
+                modifier = Modifier.padding(16.dp),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = ErizoHubTheme.Fonts.customFontFamily,
+                color = Color.White
+            )
+        }
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White, RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)),
+            verticalArrangement = Arrangement.Top) {
+
+
+            LazyColumn(modifier = Modifier
+                .height(550.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 26.dp),) {
+                items(chatList.size) { index ->
+                    val chat = chatList[index]
+                    ChatListItem(chat = chat) {
+                        navController.navigate("chat_screen/${chat.chatId}/${chat.otherUserId}")
+                    }
+                }
+            }
+
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                Button(
+                    onClick = { navController.navigate("user_selection_screen") },
+                    colors = ButtonDefaults.buttonColors(containerColor = ErizoHubTheme.Colors.primary, contentColor = Color.Gray) ,
+                    modifier = Modifier
+                        .padding(end = 20.dp)
+                        .width(75.dp)
+                        .height(75.dp)
+                        .border(1.dp, Color.Transparent)
+                        .shadow(10.dp, shape = RoundedCornerShape(30.dp)),
+                ) {
+                    Image(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Enviar mensaje",
+                        modifier = Modifier.size(40.dp)
+                    )
                 }
             }
         }
-
-        Button(
-            onClick = { navController.navigate("user_selection_screen") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(text = "Buscar usuarios")
-        }
-
-
     }
 }
 

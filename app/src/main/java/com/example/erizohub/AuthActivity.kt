@@ -1,6 +1,8 @@
 package com.example.erizohub
 
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -12,10 +14,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
+import com.google.api.services.drive.Drive
+import com.google.api.services.drive.DriveScopes
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.http.InputStreamContent
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.services.drive.model.File
 
 class AuthActivity : ComponentActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -39,14 +49,16 @@ class AuthActivity : ComponentActivity() {
             auth = FirebaseAuth.getInstance()
 
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
+                .requestScopes(Scope(DriveScopes.DRIVE_FILE))
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .build()
 
             googleSignInClient = GoogleSignIn.getClient(this, gso)
 
             setContent {
                 val myController = rememberNavController()
+
                 NavHost(
                     navController = myController,
                     startDestination = "loading"
@@ -71,9 +83,6 @@ class AuthActivity : ComponentActivity() {
                             onGoogleSignUpClick = { signUpWithGoogle() }
                         )
                     }
-                    composable("profile") {
-                        Perfil(navController = myController)
-                    }
                 }
             }
         }
@@ -84,7 +93,6 @@ class AuthActivity : ComponentActivity() {
             onInitialized()
         }
     }
-
 
     private fun signUpWithGoogle() {
         isSigningUp = true
@@ -104,7 +112,6 @@ class AuthActivity : ComponentActivity() {
         }
     }
 
-
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -116,6 +123,8 @@ class AuthActivity : ComponentActivity() {
             Toast.makeText(this, "Google Sign-In falló: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 
     private fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
         val credential = GoogleAuthProvider.getCredential(account?.idToken, null)

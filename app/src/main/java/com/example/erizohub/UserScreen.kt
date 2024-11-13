@@ -2,6 +2,9 @@ package com.example.erizohub
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -52,14 +55,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun UserScreen(navController: NavController) {
+fun UserScreen(
+    navController: NavController,
+    uploadImageToDrive: (Uri, (String) -> Unit) -> Unit
+)  {
     var expanded by remember { mutableStateOf(false) }
     var urlText by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var profilePictureUrl by remember { mutableStateOf("") }
     var isEditingProfile by remember { mutableStateOf(false) }
-    var context = navController.context
-
+    val context = navController.context
     val user = FirebaseAuth.getInstance().currentUser
     val db = FirebaseFirestore.getInstance()
 
@@ -74,6 +79,15 @@ fun UserScreen(navController: NavController) {
         }
     }
 
+    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            uploadImageToDrive(uri) { newProfilePictureUrl ->
+                updateProfilePictureUrl(newProfilePictureUrl)
+            }
+        }
+    }
+
+
     fun updateUserName(newName: String) {
         user?.uid?.let { uid ->
             db.collection("users").document(uid)
@@ -84,6 +98,8 @@ fun UserScreen(navController: NavController) {
                 }
         }
     }
+
+
 
     Column(
         modifier = Modifier
@@ -103,15 +119,14 @@ fun UserScreen(navController: NavController) {
                 modifier = Modifier
                     .size(198.dp)
                     .clip(CircleShape)
-                    .clickable(enabled = isEditingProfile) { expanded = !expanded }
+                    .clickable(enabled = isEditingProfile) { galleryLauncher.launch("image/*") }
             ) {
                 if (profilePictureUrl.isNotEmpty()) {
                     AsyncImage(
                         model = profilePictureUrl,
                         contentDescription = "Profile Picture",
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize()
+                        modifier = Modifier.fillMaxSize()
                     )
                 } else {
                     Image(

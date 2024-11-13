@@ -21,11 +21,19 @@ class AuthActivity : ComponentActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
     private val db = FirebaseFirestore.getInstance()
-
     private var isSigningUp = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        FirebaseApp.initializeApp(this)
+        auth = FirebaseAuth.getInstance()
         super.onCreate(savedInstanceState)
+
+        if (auth.currentUser != null) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
 
         initializeFirebase {
             auth = FirebaseAuth.getInstance()

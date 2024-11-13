@@ -1,5 +1,7 @@
 package com.example.erizohub
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,8 +51,6 @@ import coil3.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-
-
 @Composable
 fun UserScreen(navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
@@ -58,6 +58,7 @@ fun UserScreen(navController: NavController) {
     var userName by remember { mutableStateOf("") }
     var profilePictureUrl by remember { mutableStateOf("") }
     var isEditingProfile by remember { mutableStateOf(false) }
+    var context = navController.context
 
     val user = FirebaseAuth.getInstance().currentUser
     val db = FirebaseFirestore.getInstance()
@@ -199,7 +200,7 @@ fun UserScreen(navController: NavController) {
                     .align(Alignment.CenterHorizontally)
                     .width(225.dp)
                     .height(59.dp)
-                    .offset(y = -25.dp)
+                    .offset(y = (-25).dp)
                     .border(1.dp, Color.Gray, shape = RoundedCornerShape(30.dp))
                     .shadow(20.dp, shape = RoundedCornerShape(30.dp)),
                 elevation = ButtonDefaults.buttonElevation(20.dp),
@@ -262,6 +263,34 @@ fun UserScreen(navController: NavController) {
             }
 
             HorizontalDivider(modifier = Modifier.width(325.dp).alpha(0.5f))
+
+            Button(
+                onClick = {
+                FirebaseAuth.getInstance().signOut()
+                val intent = Intent(context, AuthActivity::class.java)
+                context.startActivity(intent)
+                (context as? Activity)?.finish()
+            },
+                modifier = Modifier.padding(top = 11.dp, bottom = 11.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9))) {
+                Row(horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier=Modifier.width(280.dp)) {
+                    Text(
+                        modifier = Modifier.alpha(0.5f),
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = ErizoHubTheme.Fonts.customFontFamily,
+                        fontSize = 15.sp,
+                        text="Cerrar sesion"
+                    )
+                    Spacer(modifier=  Modifier.width(0.dp))
+                    Icon(
+                        modifier = Modifier.alpha(0.5f),
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = "Menu")
+
+                }
+            }
+
 
             Text(
                 modifier = Modifier.alpha(0.5f).padding(top = 24.dp),

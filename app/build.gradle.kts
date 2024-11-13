@@ -28,6 +28,7 @@ android {
             )
         }
     }
+
     packagingOptions {
         exclude ("META-INF/INDEX.LIST")
         exclude ("META-INF/LICENSE")
@@ -35,6 +36,7 @@ android {
         exclude ("META-INF/DEPENDENCIES")
 
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -71,8 +73,8 @@ dependencies {
     implementation(libs.play.services.auth)
 
     // Google Drive dependencies
-    implementation(libs.google.api.client.android) // Cliente Android
-    implementation(libs.google.api.client.gson) // JSON parser
+    implementation(libs.google.api.client.android)
+    implementation(libs.google.api.client.gson)
     implementation (libs.google.api.services.drive.vv3rev20240509200)
 
 

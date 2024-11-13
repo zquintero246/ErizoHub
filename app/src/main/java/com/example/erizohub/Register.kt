@@ -158,7 +158,6 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally,){
 
-                // Botón de registro con manejo de errores detallado
                 Button(onClick = {
                     if (nameUserinput.isEmpty() || emailinput.isEmpty() || password.isEmpty()) {
                         Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()

@@ -28,6 +28,13 @@ android {
             )
         }
     }
+    packagingOptions {
+        exclude ("META-INF/INDEX.LIST")
+        exclude ("META-INF/LICENSE")
+        exclude ("META-INF/NOTICE")
+        exclude ("META-INF/DEPENDENCIES")
+
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -51,11 +58,23 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.firebase.auth)
+
+    // Firebase dependencies
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.appcheck.playintegrity)
+
+    // Google Sign-In dependencies
+    implementation(libs.play.services.auth)
+
+    // Google Drive dependencies
+    implementation(libs.google.api.client.android) // Cliente Android
+    implementation(libs.google.api.client.gson) // JSON parser
+    implementation (libs.google.api.services.drive.vv3rev20240509200)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -64,17 +83,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    //fire base
-    implementation(platform(libs.firebase.bom))
-    implementation (libs.google.firebase.auth.ktx)
-    implementation (libs.google.firebase.firestore.ktx)
-    implementation (libs.play.services.auth)
-
-    implementation (libs.firebase.auth.ktx.v2211)
-    implementation (libs.firebase.firestore.ktx.v2471)
-    implementation (libs.play.services.auth.v2060)
 }
-
-
-

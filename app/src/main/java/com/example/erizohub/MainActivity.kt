@@ -27,10 +27,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.google.android.gms.common.GoogleApiAvailability
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {

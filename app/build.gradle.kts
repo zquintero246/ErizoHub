@@ -50,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.coil.kt.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.coil.compose)
     implementation(libs.androidx.core.ktx)
@@ -76,7 +77,13 @@ dependencies {
     implementation(libs.google.api.client.android)
     implementation(libs.google.api.client.gson)
     implementation (libs.google.api.services.drive.vv3rev20240509200)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.googleid)
 
+
+    implementation (libs.androidx.credentials)
+    implementation (libs.androidx.credentials.play.services.auth)
+    implementation (libs.googleid.vlatestversion)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

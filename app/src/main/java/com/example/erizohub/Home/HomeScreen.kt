@@ -41,7 +41,7 @@ fun getFirstWord(text: String): String {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchField(onSearchTextChanged: (String) -> Unit) {
+fun SearchField(onSearchTextChanged: (String) -> Unit, placeHolder: String = "") {
     var searchText by remember { mutableStateOf("") }
 
     TextField(
@@ -52,7 +52,7 @@ fun SearchField(onSearchTextChanged: (String) -> Unit) {
         },
         label = {
             Text(
-                text = "Buscar Emprendimiento...",
+                text = placeHolder,
                 color = ErizoHubTheme.Colors.textFieldText,
                 fontFamily = customFontFamily,
                 fontSize = 10.sp
@@ -138,16 +138,21 @@ fun HomeScreen(navController: NavController) {
                 textAlign = TextAlign.Start
             )
             Spacer(modifier = Modifier.height(10.dp))
-            SearchField { query ->
-                val queryLowercase = query.lowercase()
-                if (queryLowercase.isEmpty()) {
-                    filteredEmprendimientos.value = listEmprendimientos.value
-                } else {
-                    filteredEmprendimientos.value = listEmprendimientos.value.filter {
-                        it.nombre_emprendimiento.contains(queryLowercase, ignoreCase = true)
+
+            SearchField(
+                onSearchTextChanged = { query ->
+                    val queryLowercase = query.lowercase()
+                    if (queryLowercase.isEmpty()) {
+                        filteredEmprendimientos.value = listEmprendimientos.value
+                    } else {
+                        filteredEmprendimientos.value = listEmprendimientos.value.filter {
+                            it.nombre_emprendimiento.contains(queryLowercase, ignoreCase = true)
+                        }
                     }
-                }
-            }
+                },
+                placeHolder = "Buscar emprendimiento"
+            )
+
         }
 
         Column(

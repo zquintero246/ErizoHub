@@ -1,6 +1,8 @@
 [versions]
 agp = "8.7.1"
 coilCompose = "3.0.0-rc01"
+coilComposeVersion = "2.0.0"
+credentials = "<latest version>"
 firebaseAuthKtxVersion = "22.1.1"
 firebaseBom = "33.5.1"
 firebaseFirestoreKtxVersion = "24.7.1"
@@ -9,6 +11,7 @@ googleApiClientGson = "1.31.5"
 googleApiServicesDrive = "v3-rev20220517-1.32.1"
 googleApiServicesDriveVersion = "v3-rev20230527-1.34.0"
 googleGoogleApiServicesDrive = "v3-rev20240509-2.0.0"
+googleidVersion = "<latest version>"
 googlePlayServicesAuth = "20.6.0"
 googlePlayServicesAuthVersion = "20.0.0"
 kotlin = "2.0.0"
@@ -30,10 +33,15 @@ playServicesAuthVersion = "20.5.0"
 playServicesProviderinstaller = "17.0.0"
 firebaseStorageKtx = "21.0.1"
 firebaseAppcheckPlayintegrity = "18.0.0"
+appcompat = "1.7.0"
+googleid = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+coil-kt-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilCompose" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth-ktx-v2211 = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebaseAuthKtxVersion" }
@@ -46,6 +54,7 @@ google-api-services-drive-vv3rev202305271340 = { module = "com.google.apis:googl
 google-api-services-drive-vv3rev20240509200 = { module = "com.google.apis:google-api-services-drive", version.ref = "googleGoogleApiServicesDrive" }
 google-firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 google-firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx" }
+googleid-vlatestversion = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleidVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -72,6 +81,8 @@ play-services-auth-v2060 = { module = "com.google.android.gms:play-services-auth
 play-services-providerinstaller = { module = "com.google.android.gms:play-services-providerinstaller", version.ref = "playServicesProviderinstaller" }
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 firebase-appcheck-playintegrity = { group = "com.google.firebase", name = "firebase-appcheck-playintegrity", version.ref = "firebaseAppcheckPlayintegrity" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -187,6 +188,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this)
         auth = FirebaseAuth.getInstance()
         super.onCreate(savedInstanceState)
@@ -205,6 +207,8 @@ class MainActivity : ComponentActivity() {
                             "home" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                             "emprende" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                             "chat_selection" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            "chat_screen/{chatId}/{otherUserId}" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            "user_selection_screen" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                             else -> Color(0xFFF2A74B)
                         }
 
@@ -212,6 +216,8 @@ class MainActivity : ComponentActivity() {
                             "home" -> Color.White
                             "emprende" -> Color.White
                             "chat_selection" -> Color.White
+                            "chat_screen/{chatId}/{otherUserId}" -> Color.White
+                            "user_selection_screen" -> Color.White
                             else -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                         }
 
@@ -219,6 +225,8 @@ class MainActivity : ComponentActivity() {
                             "home" -> Color(0xFFF2A74B)
                             "emprende" -> Color(0xFFF2A74B)
                             "chat_selection" -> Color(0xFFF2A74B)
+                            "chat_screen/{chatId}/{otherUserId}" -> Color(0xFFF2A74B)
+                            "user_selection_screen" -> Color(0xFFF2A74B)
                             else -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                         }
                     }

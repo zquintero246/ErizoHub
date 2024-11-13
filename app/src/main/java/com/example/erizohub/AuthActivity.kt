@@ -17,6 +17,8 @@ import com.example.erizohub.InicioApp.Registrarse
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.api.services.drive.DriveScopes
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.*
@@ -90,22 +92,15 @@ class AuthActivity : ComponentActivity() {
         }
     }
 
+    private fun signInWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        googleSignInLauncher.launch(signInIntent)
+    }
+
     private fun signUpWithGoogle() {
         isSigningUp = true
         val signUpIntent = googleSignInClient.signInIntent
         googleSignInLauncher.launch(signUpIntent)
-    }
-
-    private fun signInWithGoogle() {
-        isSigningUp = false
-        lifecycleScope.launch {
-            try {
-                val signInIntent = googleSignInClient.signInIntent
-                googleSignInLauncher.launch(signInIntent)
-            } catch (e: Exception) {
-                Toast.makeText(this@AuthActivity, "Error al iniciar sesión con Google", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     private val googleSignInLauncher = registerForActivityResult(
@@ -114,14 +109,14 @@ class AuthActivity : ComponentActivity() {
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
             val account = task.getResult(ApiException::class.java)
-            firebaseAuthWithGoogle(account)
+            if (account != null) {
+                firebaseAuthWithGoogle(account)
+            }
         } catch (e: ApiException) {
             Toast.makeText(this, "Google Sign-In falló: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
-
-
-
+    
     private fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
         val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
@@ -161,5 +156,4 @@ class AuthActivity : ComponentActivity() {
                     Toast.makeText(this, "Error al guardar datos: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }
-    }
-}
+    }}

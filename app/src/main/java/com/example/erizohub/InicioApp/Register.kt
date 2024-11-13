@@ -178,7 +178,6 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                                         db.collection("users").document(user.uid).set(newUser)
                                             .addOnSuccessListener {
                                                 Toast.makeText(context, "Se guardó correctamente", Toast.LENGTH_SHORT).show()
-                                                // Limpiar campos de entrada después de registro exitoso
                                                 nameUserinput = ""
                                                 emailinput = ""
                                                 password = ""

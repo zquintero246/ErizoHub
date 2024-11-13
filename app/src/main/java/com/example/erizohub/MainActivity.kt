@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -57,6 +59,7 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 
 class MainActivity : ComponentActivity() {
@@ -200,6 +203,8 @@ class MainActivity : ComponentActivity() {
                 var bottomBarColor by remember { mutableStateOf(Color(0xFFF2A74B)) }
                 var bottomBarColorBackground by remember { mutableStateOf(com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background) }
                 var bottomBarIcons by remember { mutableStateOf(com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background) }
+                var menuExpanded by remember { mutableStateOf(false) }
+
 
                 LaunchedEffect(myNavController) {
                     myNavController.addOnDestinationChangedListener { _, destination, _ ->
@@ -238,6 +243,12 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.background(color = Color.White),
                             title = { Text("") },
                             actions = {
+                                IconButton(onClick = { menuExpanded = !menuExpanded }) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert, // Cambia esto a tu ícono preferido
+                                        contentDescription = "Menú"
+                                    )
+                                }
                                 IconButton(
                                     onClick = {
                                         myNavController.navigate("userscreen") {
@@ -255,6 +266,7 @@ class MainActivity : ComponentActivity() {
                                         contentDescription = "UserScreen"
                                     )
                                 }
+
                             }
                         )
                     },
@@ -420,6 +432,35 @@ class MainActivity : ComponentActivity() {
                                 val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
                                 val otherUserId = backStackEntry.arguments?.getString("otherUserId") ?: ""
                                 ChatScreen(chatId = chatId, otherUserId = otherUserId)
+
+                                if (menuExpanded) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.TopStart // Esto alinea la Card dentro del Box
+                                    ) {
+                                        Card(
+                                            modifier = Modifier.fillMaxWidth(0.5f), // Ajusta el ancho si lo deseas
+                                            elevation = CardDefaults.cardElevation(8.dp)
+                                        ) {
+                                            Column(
+                                                modifier = Modifier.padding(16.dp),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                TextButton(onClick = { /* Acción botón 1 */ }) {
+                                                    Text("Botón 1")
+                                                }
+                                                TextButton(onClick = { /* Acción botón 2 */ }) {
+                                                    Text("Botón 2")
+                                                }
+                                                TextButton(onClick = { /* Acción botón 3 */ }) {
+                                                    Text("Botón 3")
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

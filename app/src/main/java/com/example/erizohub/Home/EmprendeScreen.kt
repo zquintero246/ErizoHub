@@ -64,16 +64,6 @@ fun EmprendeScreen(navController: NavController) {
     val db = FirebaseFirestore.getInstance()
     val scrollState = rememberScrollState()
 
-    fun uploadImage(UrlProfile: String) {
-        user?.uid?.let { uid ->
-            db.collection("emprendimientos").document(uid)
-                .update("imagenEmprendimiento", UrlProfile)
-                .addOnSuccessListener {
-                    imagenPerfilEmprendimiento = UrlProfile
-                }
-        }
-    }
-
     suspend fun getDriveService(context: Context): Drive = withContext(Dispatchers.IO) {
         val account = GoogleSignIn.getLastSignedInAccount(context)
         val credential = GoogleAccountCredential.usingOAuth2(
@@ -103,14 +93,15 @@ fun EmprendeScreen(navController: NavController) {
                     driveService = drive,
                     uri = it,
                     onUploadComplete = { newProfilePictureUrl ->
-                        uploadImage(newProfilePictureUrl)
+                        imagenPerfilEmprendimiento = newProfilePictureUrl
                     },
                     context = context,
-                    lifecycleScope =  CoroutineScope(Dispatchers.IO)
+                    lifecycleScope = CoroutineScope(Dispatchers.IO)
                 )
             }
         }
     }
+
 
 
     Column(

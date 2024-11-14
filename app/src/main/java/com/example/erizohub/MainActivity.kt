@@ -75,7 +75,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     companion object {
         private const val REQUEST_AUTHORIZATION = 1001
 
@@ -96,7 +95,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Crear carpeta en Drive si no existe
         private fun createFolderIfNotExists(
             driveService: Drive,
             lifecycleScope: CoroutineScope,
@@ -130,7 +128,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Subir imagen a Google Drive
         fun uploadImageToDrive(
             driveService: Drive,
             uri: Uri,

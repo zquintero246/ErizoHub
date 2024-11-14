@@ -174,6 +174,7 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                                             userName = nameUserinput,
                                             emailc = emailinput,
                                             profilePictureUrl = profilepictureinput
+
                                         )
                                         db.collection("users").document(user.uid).set(newUser)
                                             .addOnSuccessListener {

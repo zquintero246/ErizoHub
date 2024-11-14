@@ -1,5 +1,6 @@
 package com.example.erizohub.UsuarioLogeado
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.erizohub.ClasesBD.Emprendimiento
-import com.example.erizohub.ClasesBD.Productos
+import com.example.erizohub.ClasesBD.Producto
 import com.example.erizohub.InicioApp.ErizoHubTheme
 import com.example.erizohub.Home.EmprendimientoItem
 import com.google.firebase.Firebase
@@ -49,15 +50,28 @@ fun EmprendimientosActivos(navController: NavController) {
                 .addOnSuccessListener { response ->
                     val emprendimientos = response.documents.map { document ->
                         Emprendimiento(
+                            idEmprendimiento = document.id, // Es importante obtener el ID del emprendimiento
                             nombre_emprendimiento = document.getString("nombre_emprendimiento") ?: "",
                             descripcion = document.getString("descripcion") ?: "",
                             imagenEmprendimiento = document.getString("imagenEmprendimiento") ?: "",
-                            listaProductos = document.get("listaproductos") as List<Productos>? ?: emptyList(),
-                            comentarios = document.get("comentarios") as List<String>? ?: emptyList()
+                            listaProductos = (document.get("listaproductos") as? List<Map<String, Any>>)?.map { productoMap ->
+                                Producto(
+                                    id_producto = productoMap["id_producto"] as? String ?: "",
+                                    nombre_producto = productoMap["nombre_producto"] as? String ?: "",
+                                    descripcionProducto = productoMap["descripcionProducto"] as? String ?: "",
+                                    precio = (productoMap["precio"] as? Number)?.toDouble() ?: 0.0,
+                                    imagen_producto = productoMap["imagen_producto"] as? String ?: ""
+                                )
+                            }?.toMutableList() ?: mutableListOf(),
+                            comentarios = (document.get("comentarios") as? List<String>)?.toMutableList() ?: mutableListOf()
                         )
                     }
                     listEmprendimientos.value = emprendimientos
                 }
+                .addOnFailureListener { exception ->
+                    Log.e("FirestoreError", "Error al obtener los emprendimientos", exception)
+                }
+
         }
     }
 

@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,25 +31,27 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.erizohub.ClasesBD.Emprendimiento
 import com.example.erizohub.Home.ChatScreen
 import com.example.erizohub.Home.ChatSelectionScreen
+import com.example.erizohub.Home.CrearProductos
 import com.example.erizohub.Home.EmprendeScreen
 import com.example.erizohub.Home.HomeScreen
+import com.example.erizohub.Home.ProductoSelectionScreen
 import com.example.erizohub.Home.UserSelectionScreen
+import com.example.erizohub.Home.Visualizar_producto
 import com.example.erizohub.InteraccionUsuarios.EmprendimientoScreen
 import com.example.erizohub.UsuarioLogeado.EmprendimientosActivos
 import com.example.erizohub.UsuarioLogeado.UserScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.InputStreamContent
 import com.google.api.client.json.gson.GsonFactory
@@ -246,7 +247,7 @@ class MainActivity : ComponentActivity() {
                             actions = {
                                 IconButton(onClick = { menuExpanded = !menuExpanded }) {
                                     Icon(
-                                        imageVector = Icons.Default.MoreVert, // Cambia esto a tu ícono preferido
+                                        imageVector = Icons.Default.MoreVert,
                                         contentDescription = "Menú"
                                     )
                                 }
@@ -402,7 +403,17 @@ class MainActivity : ComponentActivity() {
                                 HomeScreen(myNavController)
                             }
                             composable("emprende") {
-                                EmprendeScreen(myNavController)
+                                EmprendeScreen(
+                                    myNavController,
+                                    emprendimiento = Emprendimiento(
+                                        idEmprendimiento = "",
+                                        nombre_emprendimiento = "",
+                                        descripcion = "",
+                                        imagenEmprendimiento = "",
+                                        listaProductos = emptyList(),
+                                        comentarios = emptyList()
+                                    )
+                                )
                             }
                             composable("chat_selection") {
                                 ChatSelectionScreen(myNavController)
@@ -418,9 +429,31 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                             }
-
                             composable("emprendimientos_activos") {
                                 EmprendimientosActivos(myNavController)
+                            }
+                            composable("producto_selection/{idEmprendimiento}") { backStackEntry ->
+                                ProductoSelectionScreen(
+                                    myNavController,
+                                    idEmprendimiento = backStackEntry.arguments?.getString("idEmprendimiento") ?: ""
+                                )
+                            }
+//                            composable("visualizar_producto/{idProducto}") { backStackEntry ->
+//                                val idProducto = backStackEntry.arguments?.getString("idProducto") ?: ""
+//                                Visualizar_producto(myNavController, idProducto)
+//                            }
+                            composable("crear_producto/{idEmprendimiento}") { backStackEntry ->
+                                CrearProductos(
+                                    myNavController,
+                                    emprendimiento = Emprendimiento(
+                                        idEmprendimiento = "",
+                                        nombre_emprendimiento = "",
+                                        descripcion = "",
+                                        imagenEmprendimiento = "",
+                                        listaProductos = emptyList(),
+                                        comentarios = emptyList()
+                                    )
+                                )
                             }
                             composable(
                                 "emprendimientoScreen/{nombreEmprendimiento}",
@@ -434,15 +467,16 @@ class MainActivity : ComponentActivity() {
                                 val otherUserId = backStackEntry.arguments?.getString("otherUserId") ?: ""
                                 ChatScreen(chatId = chatId, otherUserId = otherUserId)
 
+                                // Menú condicional dentro de chat_screen
                                 if (menuExpanded) {
                                     Box(
                                         modifier = Modifier
                                             .fillMaxSize()
                                             .padding(16.dp),
-                                        contentAlignment = Alignment.TopStart // Esto alinea la Card dentro del Box
+                                        contentAlignment = Alignment.TopStart
                                     ) {
                                         Card(
-                                            modifier = Modifier.fillMaxWidth(0.5f), // Ajusta el ancho si lo deseas
+                                            modifier = Modifier.fillMaxWidth(0.5f),
                                             elevation = CardDefaults.cardElevation(8.dp)
                                         ) {
                                             Column(
@@ -462,9 +496,8 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                 }
-                            }
-                        }
-                    }
+                                }
+                        }                    }
                 }
             }
         }

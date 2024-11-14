@@ -65,8 +65,6 @@ fun UserScreen(
     navController: NavController,
     uploadImageToDrive: (Uri, (String) -> Unit) -> Unit
 )  {
-    var expanded by remember { mutableStateOf(false) }
-    var urlText by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var profilePictureUrl by remember { mutableStateOf("") }
     var isEditingProfile by remember { mutableStateOf(false) }

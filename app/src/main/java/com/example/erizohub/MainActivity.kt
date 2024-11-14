@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,6 +32,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -56,74 +58,126 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
-
     private var pendingUri: Uri? = null
-
-
 
     private fun startUploadImageToDrive(uri: Uri, onUploadComplete: (String) -> Unit, context: Context) {
         lifecycleScope.launch {
-            val driveService = getDriveService()
-            uploadImageToDrive(driveService, uri, onUploadComplete, context)
+            val driveService = getDriveService(context = context)
+            uploadImageToDrive(driveService, uri, onUploadComplete, context, lifecycleScope)
         }
     }
 
-    private fun uploadImageToDrive(
-        driveService: Drive,
-        uri: Uri,
-        onUploadComplete: (String) -> Unit,
-        context: Context
-    ) {
-        createFolderIfNotExists(driveService) { folderId ->
-            val fileMetadata = File().apply {
-                name = "profile_picture_${auth.currentUser?.uid}.jpg"
-                parents = listOf(folderId)
+
+    companion object {
+        private const val REQUEST_AUTHORIZATION = 1001
+
+        suspend fun getDriveService(context: Context): Drive {
+            return withContext(Dispatchers.IO) {
+                val account = GoogleSignIn.getLastSignedInAccount(context)
+                val credential = GoogleAccountCredential.usingOAuth2(
+                    context, listOf(DriveScopes.DRIVE_FILE)
+                ).apply {
+                    selectedAccount = account?.account
+                }
+
+                Drive.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    GsonFactory.getDefaultInstance(),
+                    credential
+                ).setApplicationName("ErizoHub").build()
             }
+        }
 
-            val inputStream = context.contentResolver.openInputStream(uri)
-            val mediaContent = InputStreamContent("image/jpeg", inputStream)
-
-            lifecycleScope.launch {
+        // Crear carpeta en Drive si no existe
+        private fun createFolderIfNotExists(
+            driveService: Drive,
+            lifecycleScope: CoroutineScope,
+            folderName: String = "appDataFolder",
+            onFolderCreated: (String) -> Unit
+        ) {
+            lifecycleScope.launch(Dispatchers.IO) {
                 try {
-                    val file = withContext(Dispatchers.IO) {
-                        driveService.files().create(fileMetadata, mediaContent)
-                            .setFields("id, webContentLink")
+                    val result = driveService.files().list()
+                        .setQ("name='$folderName' and mimeType='application/vnd.google-apps.folder' and trashed=false")
+                        .setSpaces("drive")
+                        .execute()
+
+                    val folderId = if (result.files.isNullOrEmpty()) {
+                        val fileMetadata = File().apply {
+                            name = folderName
+                            mimeType = "application/vnd.google-apps.folder"
+                        }
+                        val folder = driveService.files().create(fileMetadata)
+                            .setFields("id")
                             .execute()
+                        folder.id
+                    } else {
+                        result.files[0].id
                     }
-                    inputStream?.close()
 
-                    file?.let {
-                        val permission = com.google.api.services.drive.model.Permission().apply {
-                            type = "anyone"
-                            role = "reader"
-                        }
-
-                        withContext(Dispatchers.IO) {
-                            driveService.permissions().create(it.id, permission).execute()
-                        }
-
-                        val newProfilePictureUrl = it.webContentLink ?: ""
-                        onUploadComplete(newProfilePictureUrl)
-                    }
-                } catch (e: UserRecoverableAuthIOException) {
-                    pendingUri = uri
-                    startActivityForResult(e.intent, REQUEST_AUTHORIZATION)
+                    onFolderCreated(folderId)
                 } catch (e: Exception) {
-                    Log.e("MainActivity", "Error al subir imagen: ${e.message}")
+                    Log.e("MainActivity", "Error al crear o verificar carpeta: ${e.message}")
+                }
+            }
+        }
+
+        // Subir imagen a Google Drive
+        fun uploadImageToDrive(
+            driveService: Drive,
+            uri: Uri,
+            onUploadComplete: (String) -> Unit,
+            context: Context,
+            lifecycleScope: CoroutineScope
+        ) {
+            createFolderIfNotExists(driveService, lifecycleScope) { folderId ->
+                val fileMetadata = File().apply {
+                    name = "profile_picture_${FirebaseAuth.getInstance().currentUser?.uid}.jpg"
+                    parents = listOf(folderId)
+                }
+
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val mediaContent = InputStreamContent("image/jpeg", inputStream)
+
+                lifecycleScope.launch {
+                    try {
+                        val file = withContext(Dispatchers.IO) {
+                            driveService.files().create(fileMetadata, mediaContent)
+                                .setFields("id, webContentLink")
+                                .execute()
+                        }
+                        inputStream?.close()
+
+                        file?.let {
+                            val permission = com.google.api.services.drive.model.Permission().apply {
+                                type = "anyone"
+                                role = "reader"
+                            }
+
+                            withContext(Dispatchers.IO) {
+                                driveService.permissions().create(it.id, permission).execute()
+                            }
+
+                            val newProfilePictureUrl = it.webContentLink ?: ""
+                            onUploadComplete(newProfilePictureUrl)
+                        }
+                    } catch (e: Exception) {
+                        Log.e("MainActivity", "Error al subir imagen: ${e.message}")
+                    }
                 }
             }
         }
     }
 
-
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_AUTHORIZATION) {
@@ -138,56 +192,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    private fun createFolderIfNotExists(driveService: Drive, folderName: String = "appDataFolder", onFolderCreated: (String) -> Unit) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val result = driveService.files().list()
-                    .setQ("name='$folderName' and mimeType='application/vnd.google-apps.folder' and trashed=false")
-                    .setSpaces("drive")
-                    .execute()
-
-                val folderId = if (result.files.isNullOrEmpty()) {
-                    val fileMetadata = File().apply {
-                        name = folderName
-                        mimeType = "application/vnd.google-apps.folder"
-                    }
-                    val folder = driveService.files().create(fileMetadata)
-                        .setFields("id")
-                        .execute()
-                    folder.id
-                } else {
-                    result.files[0].id
-                }
-
-                onFolderCreated(folderId)
-            } catch (e: Exception) {
-                Log.e("MainActivity", "Error al crear o verificar carpeta: ${e.message}")
-            }
-        }
-    }
-
-    companion object {
-        private const val REQUEST_AUTHORIZATION = 1001
-    }
-
-    private suspend fun getDriveService(): Drive {
-        return withContext(Dispatchers.IO) {
-            val account = GoogleSignIn.getLastSignedInAccount(this@MainActivity)
-            val credential = GoogleAccountCredential.usingOAuth2(
-                this@MainActivity, listOf(DriveScopes.DRIVE_FILE)
-            ).apply {
-                selectedAccount = account?.account
-            }
-
-            Drive.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                GsonFactory.getDefaultInstance(),
-                credential
-            ).setApplicationName("ErizoHub").build()
-        }
-    }
-
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {

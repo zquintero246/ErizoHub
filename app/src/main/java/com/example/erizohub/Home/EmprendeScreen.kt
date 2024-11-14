@@ -1,5 +1,9 @@
 package com.example.erizohub.Home
+import android.content.Context
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,6 +35,19 @@ import com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily
 import com.example.erizohub.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.erizohub.MainActivity.Companion.uploadImageToDrive
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.services.drive.Drive
+import com.google.api.services.drive.DriveScopes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,10 +59,59 @@ fun EmprendeScreen(navController: NavController) {
     var nombreEmprendimiento by remember { mutableStateOf("") }
     var descripcionEmprendimiento by remember { mutableStateOf("") }
     var imagenPerfilEmprendimiento by remember { mutableStateOf("") }
-    var imagenes by remember { mutableStateOf(mutableListOf<String>()) }
+    val imagenes by remember { mutableStateOf(mutableListOf<String>()) }
     val user = FirebaseAuth.getInstance().currentUser
     val db = FirebaseFirestore.getInstance()
     val scrollState = rememberScrollState()
+
+    fun uploadImage(UrlProfile: String) {
+        user?.uid?.let { uid ->
+            db.collection("emprendimientos").document(uid)
+                .update("imagenEmprendimiento", UrlProfile)
+                .addOnSuccessListener {
+                    imagenPerfilEmprendimiento = UrlProfile
+                }
+        }
+    }
+
+    suspend fun getDriveService(context: Context): Drive = withContext(Dispatchers.IO) {
+        val account = GoogleSignIn.getLastSignedInAccount(context)
+        val credential = GoogleAccountCredential.usingOAuth2(
+            context, listOf(DriveScopes.DRIVE_FILE)
+        ).apply {
+            selectedAccount = account?.account
+        }
+
+        Drive.Builder(
+            GoogleNetHttpTransport.newTrustedTransport(),
+            GsonFactory.getDefaultInstance(),
+            credential
+        ).setApplicationName("ErizoHub").build()
+    }
+
+    val driveService = remember { mutableStateOf<Drive?>(null) }
+
+    LaunchedEffect(context) {
+        val service = getDriveService(context)
+        driveService.value = service
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            driveService.value?.let { drive ->
+                uploadImageToDrive(
+                    driveService = drive,
+                    uri = it,
+                    onUploadComplete = { newProfilePictureUrl ->
+                        uploadImage(newProfilePictureUrl)
+                    },
+                    context = context,
+                    lifecycleScope =  CoroutineScope(Dispatchers.IO)
+                )
+            }
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -82,7 +148,8 @@ fun EmprendeScreen(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clickable { expanded = !expanded },
+                    .clickable { galleryLauncher.launch("image/*")
+                               },
                 contentAlignment = Alignment.Center
             ) {
                 if (imagenPerfilEmprendimiento.isNotEmpty()) {
@@ -245,9 +312,9 @@ fun EmprendeScreen(navController: NavController) {
                     .shadow(10.dp, shape = RoundedCornerShape(30.dp)),
             ) {
                 Text(
-                    modifier = Modifier,
-                    fontFamily = customFontFamily,
-                    fontSize = 15.sp,
+                        modifier = Modifier,
+                        fontFamily = customFontFamily,
+                        fontSize = 15.sp,
                     text = "Añadir Imagen"
                 )
             }

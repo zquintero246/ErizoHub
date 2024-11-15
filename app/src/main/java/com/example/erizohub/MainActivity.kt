@@ -47,6 +47,7 @@ import com.example.erizohub.Home.ProductoSelectionScreen
 import com.example.erizohub.Home.UserSelectionScreen
 import com.example.erizohub.Home.Visualizar_producto
 import com.example.erizohub.InteraccionUsuarios.EmprendimientoScreen
+import com.example.erizohub.InteraccionUsuarios.ProductoSelectionScreenEmprendimiento
 import com.example.erizohub.UsuarioLogeado.EmprendimientosActivos
 import com.example.erizohub.UsuarioLogeado.UserScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -433,11 +434,11 @@ class MainActivity : ComponentActivity() {
                                 EmprendimientosActivos(myNavController)
                             }
                             composable("producto_selection/{idEmprendimiento}") { backStackEntry ->
-                                ProductoSelectionScreen(
-                                    myNavController,
-                                    idEmprendimiento = backStackEntry.arguments?.getString("idEmprendimiento") ?: ""
-                                )
+                                val idEmprendimiento = backStackEntry.arguments?.getString("idEmprendimiento") ?: ""
+                                ProductoSelectionScreen(myNavController, idEmprendimiento)
                             }
+
+
                             composable("crear_producto/{idEmprendimiento}") { backStackEntry ->
                                 CrearProductos(
                                     myNavController,
@@ -452,12 +453,23 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable(
-                                "emprendimientoScreen/{nombreEmprendimiento}",
-                                arguments = listOf(navArgument("nombreEmprendimiento") { type = NavType.StringType })
+                                "emprendimientoScreen/{idEmprendimiento}",
+                                arguments = listOf(navArgument("idEmprendimiento") { type = NavType.StringType })
                             ) { backStackEntry ->
-                                val nombreEmprendimiento = backStackEntry.arguments?.getString("nombreEmprendimiento") ?: ""
-                                EmprendimientoScreen(myNavController, nombreEmprendimiento)
+                                val idEmprendimiento = backStackEntry.arguments?.getString("idEmprendimiento") ?: ""
+                                EmprendimientoScreen(
+                                    navController = myNavController,
+                                    idEmprendimiento = idEmprendimiento
+                                )
                             }
+                            composable(
+                                "visualizar_productos/{idEmprendimiento}",
+                                arguments = listOf(navArgument("idEmprendimiento") { type = NavType.StringType })
+                            ) { backStackEntry ->
+                                val idEmprendimiento = backStackEntry.arguments?.getString("idEmprendimiento") ?: ""
+                                ProductoSelectionScreenEmprendimiento(myNavController, idEmprendimiento)
+                            }
+
                             composable("chat_screen/{chatId}/{otherUserId}") { backStackEntry ->
                                 val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
                                 val otherUserId = backStackEntry.arguments?.getString("otherUserId") ?: ""

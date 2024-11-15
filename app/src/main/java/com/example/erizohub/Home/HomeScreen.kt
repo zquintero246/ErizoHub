@@ -187,7 +187,7 @@ fun HomeScreen(navController: NavController) {
             ) {
                 items(filteredEmprendimientos.value.size) { index ->
                     EmprendimientoItem(myEmprendimiento = filteredEmprendimientos.value[index]) {
-                        navController.navigate("emprendimientoScreen/${filteredEmprendimientos.value[index].nombre_emprendimiento}")
+                        navController.navigate("emprendimientoScreen/${filteredEmprendimientos.value[index].idEmprendimiento}")
                     }
                 }
             }

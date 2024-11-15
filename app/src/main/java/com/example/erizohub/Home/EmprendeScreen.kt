@@ -1,6 +1,7 @@
 package com.example.erizohub.Home
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -68,6 +69,8 @@ fun EmprendeScreen(navController: NavController, emprendimiento: Emprendimiento)
     val user = FirebaseAuth.getInstance().currentUser
     val db = FirebaseFirestore.getInstance()
     val scrollState = rememberScrollState()
+    var isEmprendimientoGuardado by remember { mutableStateOf(false) }
+
 
     suspend fun getDriveService(context: Context): Drive = withContext(Dispatchers.IO) {
         val account = GoogleSignIn.getLastSignedInAccount(context)
@@ -90,6 +93,18 @@ fun EmprendeScreen(navController: NavController, emprendimiento: Emprendimiento)
         val service = getDriveService(context)
         driveService.value = service
     }
+
+    LaunchedEffect(Unit) {
+        val sharedPreferences = context.getSharedPreferences("EmprendimientoPrefs", Context.MODE_PRIVATE)
+        val idEmprendimientoGuardado = sharedPreferences.getString("idEmprendimientoGuardado", "")
+
+        if (idEmprendimientoGuardado.isNullOrEmpty()) {
+            nombreEmprendimiento = ""
+            descripcionEmprendimiento = ""
+            imagenPerfilEmprendimiento = ""
+        }
+    }
+
 
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
@@ -235,6 +250,7 @@ fun EmprendeScreen(navController: NavController, emprendimiento: Emprendimiento)
                         containerColor = Color.Transparent,
                         contentColor = ErizoHubTheme.Colors.primary
                     ),
+                    enabled = isEmprendimientoGuardado,
                     modifier = Modifier
                         .padding(end = 20.dp, top = 10.dp)
                 ) {
@@ -281,6 +297,13 @@ fun EmprendeScreen(navController: NavController, emprendimiento: Emprendimiento)
                                 .set(emprendimientoData)
                                 .addOnSuccessListener {
                                     Toast.makeText(context, "Emprendimiento guardado", Toast.LENGTH_SHORT).show()
+                                    val sharedPreferences = context.getSharedPreferences("EmprendimientoPrefs", Context.MODE_PRIVATE)
+                                    val editor = sharedPreferences.edit()
+
+                                    editor.putString("idEmprendimientoGuardado", idEmprendimiento)
+                                    editor.apply()
+
+                                    isEmprendimientoGuardado = true
                                 }
                                 .addOnFailureListener {
                                     Toast.makeText(context, "Error al guardar el emprendimiento", Toast.LENGTH_SHORT).show()
@@ -321,6 +344,9 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
     val db = FirebaseFirestore.getInstance()
     val scrollState = rememberScrollState()
     val idEmprendimiento = emprendimiento.idEmprendimiento
+    val sharedPreferences = context.getSharedPreferences("EmprendimientoPrefs", Context.MODE_PRIVATE)
+    val idEmprendimientoGuardado = sharedPreferences.getString("idEmprendimientoGuardado", "")
+
 
     suspend fun getDriveService(context: Context): Drive = withContext(Dispatchers.IO) {
         val account = GoogleSignIn.getLastSignedInAccount(context)
@@ -527,10 +553,11 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
                                     "descripcionProducto" to descripcionProducto,
                                     "imagen_producto" to imagenProducto,
                                 )
+
                                 db.collection("users")
                                     .document(user.uid)
                                     .collection("emprendimientos")
-                                    .document(idEmprendimiento)
+                                    .document(idEmprendimientoGuardado ?: "")
                                     .collection("productos")
                                     .add(productoData)
                                     .addOnSuccessListener {
@@ -539,26 +566,27 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
                                     .addOnFailureListener {
                                         Toast.makeText(context, "Error al guardar el producto", Toast.LENGTH_SHORT).show()
                                     }
-
                             } else {
                                 Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black),
-                        modifier = Modifier    .align(Alignment.CenterHorizontally)
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
                             .width(225.dp)
                             .height(59.dp)
                             .border(1.dp, Color.Transparent, shape = RoundedCornerShape(30.dp))
-                            .shadow(10.dp, shape = RoundedCornerShape(30.dp)),
-
-                        ) {
+                            .shadow(10.dp, shape = RoundedCornerShape(30.dp))
+                    ) {
                         Text(
                             modifier = Modifier.alpha(0.7f),
                             fontFamily = customFontFamily,
                             fontWeight = FontWeight.Light,
                             fontSize = 12.sp,
-                            text = "Guardar Producto")
+                            text = "Guardar Producto"
+                        )
                     }
+
                 }
 
             }
@@ -573,14 +601,20 @@ fun ProductoSelectionScreen(navController: NavController, idEmprendimiento: Stri
     val db = FirebaseFirestore.getInstance()
     val productos = remember { mutableStateListOf<Producto>() }
     val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("EmprendimientoPrefs", Context.MODE_PRIVATE)
+    val idEmprendimientoGuardado = sharedPreferences.getString("idEmprendimientoGuardado", "")
+    val idEmprendimientoUsado = idEmprendimiento.ifEmpty { idEmprendimientoGuardado ?: "" }
+    Log.d("ProductoSelectionScreen", "ID Emprendimiento usado: $idEmprendimientoUsado")
+
+
 
     LaunchedEffect(Unit) {
         val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
+        if (user != null && idEmprendimientoUsado.isNotEmpty()) {
             db.collection("users")
                 .document(user.uid)
                 .collection("emprendimientos")
-                .document(idEmprendimiento)
+                .document(idEmprendimientoUsado)
                 .collection("productos")
                 .get()
                 .addOnSuccessListener { result ->
@@ -593,7 +627,10 @@ fun ProductoSelectionScreen(navController: NavController, idEmprendimiento: Stri
                 .addOnFailureListener {
                     Toast.makeText(context, "Error al obtener los productos", Toast.LENGTH_SHORT).show()
                 }
+        } else {
+            Toast.makeText(context, "ID de Emprendimiento inválido", Toast.LENGTH_SHORT).show()
         }
+
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -603,7 +640,38 @@ fun ProductoSelectionScreen(navController: NavController, idEmprendimiento: Stri
             }
         }
     }
+
+    Button(
+        onClick = {
+            sharedPreferences.edit().remove("idEmprendimientoGuardado").apply()
+
+            Toast.makeText(context, "Creación de emprendimiento finalizada", Toast.LENGTH_SHORT).show()
+
+
+            navController.navigate("home") {
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
+            }
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = ErizoHubTheme.Colors.primary,
+            contentColor = Color.White
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Terminar Creación",
+            fontFamily = customFontFamily,
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center
+        )
+    }
+
 }
+
 
 
 @Composable
@@ -654,3 +722,4 @@ fun ProductoItem(producto: Producto, onClick: () -> Unit) {
         }
     }
 }
+

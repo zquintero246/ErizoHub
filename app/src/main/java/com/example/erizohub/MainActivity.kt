@@ -438,10 +438,6 @@ class MainActivity : ComponentActivity() {
                                     idEmprendimiento = backStackEntry.arguments?.getString("idEmprendimiento") ?: ""
                                 )
                             }
-//                            composable("visualizar_producto/{idProducto}") { backStackEntry ->
-//                                val idProducto = backStackEntry.arguments?.getString("idProducto") ?: ""
-//                                Visualizar_producto(myNavController, idProducto)
-//                            }
                             composable("crear_producto/{idEmprendimiento}") { backStackEntry ->
                                 CrearProductos(
                                     myNavController,

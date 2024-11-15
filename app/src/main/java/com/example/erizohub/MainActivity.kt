@@ -45,9 +45,9 @@ import com.example.erizohub.Home.EmprendeScreen
 import com.example.erizohub.Home.HomeScreen
 import com.example.erizohub.Home.ProductoSelectionScreen
 import com.example.erizohub.Home.UserSelectionScreen
-import com.example.erizohub.Home.Visualizar_producto
 import com.example.erizohub.InteraccionUsuarios.EmprendimientoScreen
 import com.example.erizohub.InteraccionUsuarios.ProductoSelectionScreenEmprendimiento
+import com.example.erizohub.InteraccionUsuarios.VisualizarProductoScreen
 import com.example.erizohub.UsuarioLogeado.EmprendimientosActivos
 import com.example.erizohub.UsuarioLogeado.UserScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -422,6 +422,15 @@ class MainActivity : ComponentActivity() {
                             composable("user_selection_screen") {
                                 UserSelectionScreen(myNavController)
                             }
+
+                            composable(
+                                "visualizar_producto/{idProducto}",
+                                arguments = listOf(navArgument("idProducto") { type = NavType.StringType })
+                            ) { backStackEntry ->
+                                val idProducto = backStackEntry.arguments?.getString("idProducto") ?: ""
+                                VisualizarProductoScreen(myNavController, idProducto)
+                            }
+
                             composable("userscreen") {
                                 UserScreen(
                                     navController = myNavController,
@@ -475,7 +484,6 @@ class MainActivity : ComponentActivity() {
                                 val otherUserId = backStackEntry.arguments?.getString("otherUserId") ?: ""
                                 ChatScreen(chatId = chatId, otherUserId = otherUserId)
 
-                                // Menú condicional dentro de chat_screen
                                 if (menuExpanded) {
                                     Box(
                                         modifier = Modifier

@@ -595,7 +595,6 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
 
 }
 
-
 @Composable
 fun ProductoSelectionScreen(navController: NavController, idEmprendimiento: String) {
     val db = FirebaseFirestore.getInstance()
@@ -671,8 +670,6 @@ fun ProductoSelectionScreen(navController: NavController, idEmprendimiento: Stri
     }
 
 }
-
-
 
 @Composable
 fun ProductoItem(producto: Producto, onClick: () -> Unit) {

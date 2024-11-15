@@ -5,5 +5,6 @@ class Producto(
     var nombre_producto: String = "",
     var descripcionProducto: String = "",
     var precio: Double = 0.0,
-    var imagen_producto: String = ""
+    var imagen_producto: String = "",
+    var idEmprendimiento: String = ""
 )

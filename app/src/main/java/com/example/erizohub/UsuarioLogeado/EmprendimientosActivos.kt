@@ -50,7 +50,7 @@ fun EmprendimientosActivos(navController: NavController) {
                 .addOnSuccessListener { response ->
                     val emprendimientos = response.documents.map { document ->
                         Emprendimiento(
-                            idEmprendimiento = document.id, // Es importante obtener el ID del emprendimiento
+                            idEmprendimiento = document.id,
                             nombre_emprendimiento = document.getString("nombre_emprendimiento") ?: "",
                             descripcion = document.getString("descripcion") ?: "",
                             imagenEmprendimiento = document.getString("imagenEmprendimiento") ?: "",

@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,7 +39,6 @@ import com.google.firebase.ktx.Firebase
 fun getFirstWord(text: String): String {
     return text.split(" ").firstOrNull() ?: ""
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,51 +85,68 @@ fun HomeScreen(navController: NavController) {
     val primerNombre by remember { derivedStateOf { getFirstWord(userName) } }
     val listEmprendimientos = remember { mutableStateOf<List<Emprendimiento>>(emptyList()) }
     val filteredEmprendimientos = remember { mutableStateOf<List<Emprendimiento>>(emptyList()) }
-    val user = FirebaseAuth.getInstance().currentUser
     val db = Firebase.firestore
+    val user = FirebaseAuth.getInstance().currentUser
 
     Log.d("HomeScreen", "Primer nombre: $primerNombre")
 
-    LaunchedEffect(user) {
-        user?.let { currentUser ->
-            db.collection("users").document(currentUser.uid).get().addOnSuccessListener { document ->
-                if (document.exists()) {
-                    userName = document.getString("userName") ?: ""
-                    Log.d("HomeScreen", "User name: $userName")
-                } else {
-                    Log.d("HomeScreen", "No se encontró el usuario en Firestore")
-                }
-            }
-        }
-
-        db.collectionGroup("emprendimientos").get().addOnSuccessListener { response ->
-            val emprendimientos = response.documents.map { document ->
-                Emprendimiento(
-                    idEmprendimiento = document.id,
-                    nombre_emprendimiento = document.getString("nombre_emprendimiento")?.lowercase() ?: "",
-                    descripcion = document.getString("descripcion") ?: "",
-                    imagenEmprendimiento = document.getString("imagenEmprendimiento") ?: "",
-                    listaProductos = (document.get("listaproductos") as? List<Map<String, Any>>)?.map { productoMap ->
-                        Producto(
-                            id_producto = productoMap["id_producto"] as? String ?: "",
-                            nombre_producto = productoMap["nombre_producto"] as? String ?: "",
-                            descripcionProducto = productoMap["descripcionProducto"] as? String ?: "",
-                            precio = (productoMap["precio"] as? Number)?.toDouble() ?: 0.0,
-                            imagen_producto = productoMap["imagen_producto"] as? String ?: ""
+    LaunchedEffect(Unit) {
+        db.collectionGroup("emprendimientos").get()
+            .addOnSuccessListener { response ->
+                val emprendimientos = response.documents.mapNotNull { document ->
+                    try {
+                        Log.d("HomeScreen", "Documento encontrado: ${document.id}")
+                        Emprendimiento(
+                            idEmprendimiento = document.id,
+                            nombre_emprendimiento = document.getString("nombre_emprendimiento")?.lowercase() ?: "Sin nombre",
+                            descripcion = document.getString("descripcion") ?: "Sin descripción",
+                            imagenEmprendimiento = document.getString("imagenEmprendimiento") ?: "",
+                            listaProductos = (document.get("listaproductos") as? List<Map<String, Any>>)?.mapNotNull { productoMap ->
+                                try {
+                                    Producto(
+                                        id_producto = productoMap["id_producto"] as? String ?: "",
+                                        nombre_producto = productoMap["nombre_producto"] as? String ?: "",
+                                        descripcionProducto = productoMap["descripcionProducto"] as? String ?: "",
+                                        precio = (productoMap["precio"] as? Number)?.toDouble() ?: 0.0,
+                                        imagen_producto = productoMap["imagen_producto"] as? String ?: ""
+                                    )
+                                } catch (e: Exception) {
+                                    Log.e("HomeScreen", "Error al parsear producto: $productoMap", e)
+                                    null
+                                }
+                            }?.toMutableList() ?: mutableListOf(),
+                            comentarios = (document.get("comentarios") as? List<String>)?.toMutableList() ?: mutableListOf()
                         )
-                    }?.toMutableList() ?: mutableListOf(),
-                    comentarios = (document.get("comentarios") as? List<String>)?.toMutableList() ?: mutableListOf()
-                )
+                    } catch (e: Exception) {
+                        Log.e("HomeScreen", "Error al parsear emprendimiento: ${document.id}", e)
+                        null
+                    }
+                }
+                Log.d("HomeScreen", "Total emprendimientos cargados: ${emprendimientos.size}")
+                listEmprendimientos.value = emprendimientos
+                filteredEmprendimientos.value = emprendimientos
             }
-
-
-
-
-            listEmprendimientos.value = emprendimientos
-            filteredEmprendimientos.value = listEmprendimientos.value
-        }
+            .addOnFailureListener { e ->
+                Log.e("HomeScreen", "Error al obtener emprendimientos", e)
+            }
     }
 
+    LaunchedEffect(user) {
+        user?.let { currentUser ->
+            db.collection("users").document(currentUser.uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        userName = document.getString("userName") ?: ""
+                        Log.d("HomeScreen", "User name cargado: $userName")
+                    } else {
+                        Log.d("HomeScreen", "No se encontró el usuario en Firestore")
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.e("HomeScreen", "Error al obtener el usuario", e)
+                }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -156,17 +173,16 @@ fun HomeScreen(navController: NavController) {
             SearchField(
                 onSearchTextChanged = { query ->
                     val queryLowercase = query.lowercase()
-                    if (queryLowercase.isEmpty()) {
-                        filteredEmprendimientos.value = listEmprendimientos.value
+                    filteredEmprendimientos.value = if (queryLowercase.isEmpty()) {
+                        listEmprendimientos.value
                     } else {
-                        filteredEmprendimientos.value = listEmprendimientos.value.filter {
+                        listEmprendimientos.value.filter {
                             it.nombre_emprendimiento.contains(queryLowercase, ignoreCase = true)
                         }
                     }
                 },
                 placeHolder = "Buscar emprendimiento"
             )
-
         }
 
         Column(
@@ -185,9 +201,9 @@ fun HomeScreen(navController: NavController) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                items(filteredEmprendimientos.value.size) { index ->
-                    EmprendimientoItem(myEmprendimiento = filteredEmprendimientos.value[index]) {
-                        navController.navigate("emprendimientoScreen/${filteredEmprendimientos.value[index].idEmprendimiento}")
+                items(filteredEmprendimientos.value) { emprendimiento ->
+                    EmprendimientoItem(myEmprendimiento = emprendimiento) {
+                        navController.navigate("emprendimientoScreen/${emprendimiento.idEmprendimiento}")
                     }
                 }
             }

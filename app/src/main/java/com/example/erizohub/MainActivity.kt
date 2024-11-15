@@ -217,6 +217,12 @@ class MainActivity : ComponentActivity() {
                             "chat_selection" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                             "chat_screen/{chatId}/{otherUserId}" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                             "user_selection_screen" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            "crear_producto" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            "producto_selection" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            "visualizar_productos/{idEmprendimiento}" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            "emprendimientoScreen/{idEmprendimiento}" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            "visualizar_producto/{idProducto}" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+
                             else -> Color(0xFFF2A74B)
                         }
 
@@ -226,6 +232,12 @@ class MainActivity : ComponentActivity() {
                             "chat_selection" -> Color.White
                             "chat_screen/{chatId}/{otherUserId}" -> Color.White
                             "user_selection_screen" -> Color.White
+                            "crear_producto" -> Color.White
+                            "producto_selection" -> Color.White
+                            "visualizar_productos/{idEmprendimiento}" -> Color.White
+                            "emprendimientoScreen/{idEmprendimiento}" -> Color.White
+                            "visualizar_producto/{idProducto}" -> Color.White
+
                             else -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                         }
 
@@ -235,6 +247,12 @@ class MainActivity : ComponentActivity() {
                             "chat_selection" -> Color(0xFFF2A74B)
                             "chat_screen/{chatId}/{otherUserId}" -> Color(0xFFF2A74B)
                             "user_selection_screen" -> Color(0xFFF2A74B)
+                            "crear_producto" -> Color(0xFFF2A74B)
+                            "producto_selection" -> Color(0xFFF2A74B)
+                            "visualizar_productos/{idEmprendimiento}" -> Color(0xFFF2A74B)
+                            "emprendimientoScreen/{idEmprendimiento}" -> Color(0xFFF2A74B)
+                            "visualizar_producto/{idProducto}" -> Color(0xFFF2A74B)
+
                             else -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                         }
                     }
@@ -466,11 +484,9 @@ class MainActivity : ComponentActivity() {
                                 arguments = listOf(navArgument("idEmprendimiento") { type = NavType.StringType })
                             ) { backStackEntry ->
                                 val idEmprendimiento = backStackEntry.arguments?.getString("idEmprendimiento") ?: ""
-                                EmprendimientoScreen(
-                                    navController = myNavController,
-                                    idEmprendimiento = idEmprendimiento
-                                )
+                                EmprendimientoScreen(myNavController, idEmprendimiento)
                             }
+
                             composable(
                                 "visualizar_productos/{idEmprendimiento}",
                                 arguments = listOf(navArgument("idEmprendimiento") { type = NavType.StringType })

@@ -1,4 +1,5 @@
 package com.example.erizohub.Home
+
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -57,7 +58,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.UUID
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -335,7 +335,7 @@ fun EmprendeScreen(navController: NavController, emprendimiento: Emprendimiento)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento) {
+fun CrearProductos(navController: NavController, emprendimiento: Emprendimiento) {
     val context = LocalContext.current
     var nombreProducto by remember { mutableStateOf("") }
     var descripcionProducto by remember { mutableStateOf("") }
@@ -343,10 +343,11 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
     val user = FirebaseAuth.getInstance().currentUser
     val db = FirebaseFirestore.getInstance()
     val scrollState = rememberScrollState()
-    val idEmprendimiento = emprendimiento.idEmprendimiento
+
+    // Obtiene el idEmprendimiento desde sharedPreferences si está disponible
     val sharedPreferences = context.getSharedPreferences("EmprendimientoPrefs", Context.MODE_PRIVATE)
     val idEmprendimientoGuardado = sharedPreferences.getString("idEmprendimientoGuardado", "")
-
+    val idEmprendimiento = idEmprendimientoGuardado ?: emprendimiento.idEmprendimiento
 
     suspend fun getDriveService(context: Context): Drive = withContext(Dispatchers.IO) {
         val account = GoogleSignIn.getLastSignedInAccount(context)
@@ -386,16 +387,13 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
         }
     }
 
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
             .verticalScroll(scrollState)
     ) {
-
-        Column (
+        Column(
             modifier = Modifier
                 .height(450.dp)
                 .background(Color.White)
@@ -404,8 +402,7 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clickable { galleryLauncher.launch("image/*")
-                    },
+                    .clickable { galleryLauncher.launch("image/*") },
                 contentAlignment = Alignment.TopCenter
             ) {
                 if (imagenProducto.isNotEmpty()) {
@@ -420,7 +417,7 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
                 } else {
                     Image(
                         painter = painterResource(id = R.drawable.polygon_2),
-                            contentDescription = "producto",
+                        contentDescription = "producto",
                         modifier = Modifier
                             .size(300.dp)
                             .border(1.dp, Color.Transparent)
@@ -429,13 +426,13 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
                     )
                 }
 
-                Column(modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(bottom = 40.dp)
-                    .fillMaxWidth(),
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(bottom = 40.dp)
+                        .fillMaxWidth(),
                     verticalArrangement = Arrangement.Bottom,
-                )
-                {
+                ) {
                     TextField(
                         value = nombreProducto,
                         onValueChange = { nombreProducto = it },
@@ -492,12 +489,9 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
                             fontFamily = customFontFamily,
                             fontSize = 15.sp
                         )
-
                     )
                 }
-
             }
-
         }
 
         Column(
@@ -506,9 +500,10 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
                 .offset(y = (-50).dp)
                 .background(color = ErizoHubTheme.Colors.background, RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
         ) {
-            Column(modifier = Modifier
-                .fillMaxWidth(),
-                horizontalAlignment = Alignment.End,) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.End,
+            ) {
                 Button(
                     onClick = {
                         navController.navigate("producto_selection/$idEmprendimiento")
@@ -517,9 +512,7 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
                         containerColor = Color.Transparent,
                         contentColor = ErizoHubTheme.Colors.primary
                     ),
-                    modifier = Modifier
-                        .padding(end = 20.dp, top = 10.dp)
-
+                    modifier = Modifier.padding(end = 20.dp, top = 10.dp)
                 ) {
                     Text(
                         text = "Ver productos",
@@ -534,38 +527,58 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
                     )
                 }
 
-
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Column(modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-                    .background(Color.White, shape = RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)),
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth()
+                        .background(Color.White, shape = RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                ) {
                     Spacer(modifier = Modifier.height(100.dp))
                     Button(
                         onClick = {
                             if (user != null && nombreProducto.isNotBlank() && descripcionProducto.isNotBlank()) {
+                                val idProducto = UUID.randomUUID().toString()
                                 val productoData = hashMapOf(
+                                    "id_producto" to idProducto,
                                     "nombre_producto" to nombreProducto,
                                     "descripcionProducto" to descripcionProducto,
                                     "imagen_producto" to imagenProducto,
+                                    "idEmprendimiento" to idEmprendimiento
                                 )
 
-                                db.collection("users")
-                                    .document(user.uid)
-                                    .collection("emprendimientos")
-                                    .document(idEmprendimientoGuardado ?: "")
-                                    .collection("productos")
-                                    .add(productoData)
-                                    .addOnSuccessListener {
-                                        Toast.makeText(context, "Producto guardado", Toast.LENGTH_SHORT).show()
-                                    }
-                                    .addOnFailureListener {
-                                        Toast.makeText(context, "Error al guardar el producto", Toast.LENGTH_SHORT).show()
-                                    }
+                                if (idEmprendimiento.isNotBlank()) {
+                                    db.collection("users")
+                                        .document(user.uid)
+                                        .collection("emprendimientos")
+                                        .document(idEmprendimiento)
+                                        .collection("productos")
+                                        .document(idProducto)
+                                        .set(productoData)
+                                        .addOnSuccessListener {
+                                            Toast.makeText(
+                                                context,
+                                                "Producto guardado",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(
+                                                context,
+                                                "Error al guardar el producto",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "ID de emprendimiento inválido",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             } else {
                                 Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
                             }
@@ -586,14 +599,12 @@ fun CrearProductos(navController : NavController, emprendimiento: Emprendimiento
                             text = "Guardar Producto"
                         )
                     }
-
                 }
-
             }
         }
     }
-
 }
+
 
 @Composable
 fun ProductoSelectionScreen(navController: NavController, idEmprendimiento: String) {
@@ -673,16 +684,23 @@ fun ProductoSelectionScreen(navController: NavController, idEmprendimiento: Stri
 
 @Composable
 fun ProductoItem(producto: Producto, onClick: () -> Unit) {
+    Spacer(modifier = Modifier.height(16.dp))
+
     Card(
         modifier = Modifier
-            .width(400.dp)
-            .padding(8.dp)
+            .width(600.dp)
             .clickable(onClick = onClick)
+            .background(Color.White)
+            .padding(16.dp)
+            .shadow(4.dp, shape = RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .padding(16.dp)
+                .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
@@ -691,7 +709,7 @@ fun ProductoItem(producto: Producto, onClick: () -> Unit) {
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(Color.Gray)
+                    .background(Color.White)
             )
 
             Spacer(modifier = Modifier.width(16.dp))

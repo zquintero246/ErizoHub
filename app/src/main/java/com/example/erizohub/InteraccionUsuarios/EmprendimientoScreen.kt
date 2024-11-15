@@ -1,6 +1,5 @@
 package com.example.erizohub.InteraccionUsuarios
 
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -8,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,10 +44,8 @@ import com.example.erizohub.InicioApp.ErizoHubTheme
 import com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily
 import com.example.erizohub.R
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
-
 
 
 @Composable
@@ -58,23 +56,25 @@ fun EmprendimientoScreen(navController: NavController, idEmprendimiento: String)
     val scrollState = rememberScrollState()
 
     LaunchedEffect(idEmprendimiento) {
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
-            db.collection("users")
-                .document(user.uid)
-                .collection("emprendimientos")
-                .document(idEmprendimiento)
-                .get()
-                .addOnSuccessListener { document ->
+        db.collectionGroup("emprendimientos")
+            .whereEqualTo("idEmprendimiento", idEmprendimiento)
+            .get()
+            .addOnSuccessListener { result ->
+                if (!result.isEmpty) {
+                    val document = result.documents[0]
                     document.toObject(Emprendimiento::class.java)?.let {
                         emprendimiento = it
                     }
+                } else {
+                    Toast.makeText(context, "Emprendimiento no encontrado", Toast.LENGTH_SHORT).show()
                 }
-                .addOnFailureListener {
-                    Toast.makeText(context, "Error al cargar el emprendimiento", Toast.LENGTH_SHORT).show()
-                }
-        }
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Error al cargar el emprendimiento", Toast.LENGTH_SHORT).show()
+                Log.e("EmprendimientoScreen", "Error al cargar el emprendimiento", it)
+            }
     }
+
 
     Column(
         modifier = Modifier
@@ -104,7 +104,7 @@ fun EmprendimientoScreen(navController: NavController, idEmprendimiento: String)
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(bottom = 40.dp)
+                        .padding(bottom = 50.dp, start = 10.dp)
                         .fillMaxWidth(),
                     verticalArrangement = Arrangement.Bottom,
                 ) {
@@ -119,10 +119,10 @@ fun EmprendimientoScreen(navController: NavController, idEmprendimiento: String)
                     )
                     Text(
                         modifier = Modifier
-                            .padding(start = 10.dp)
+                            .padding(start = 15.dp)
                             .fillMaxWidth(),
                         text = emprendimiento?.descripcion ?: "Descripción del Emprendimiento",
-                        color = Color.Gray,
+                        color = Color.Black,
                         fontFamily = customFontFamily,
                         fontSize = 15.sp,
                         textAlign = TextAlign.Start
@@ -138,7 +138,8 @@ fun EmprendimientoScreen(navController: NavController, idEmprendimiento: String)
                 .background(color = ErizoHubTheme.Colors.background, RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.End,
             ) {
                 Button(
@@ -169,85 +170,114 @@ fun EmprendimientoScreen(navController: NavController, idEmprendimiento: String)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
+
             }
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .background(color = Color.White, RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(text = "Comentarios", color = Color.Black, fontFamily = customFontFamily, fontSize = 20.sp)
+            }
+
         }
+
+
     }
 }
-
 
 @Composable
 fun ProductoSelectionScreenEmprendimiento(navController: NavController, idEmprendimiento: String) {
     val db = FirebaseFirestore.getInstance()
     val productos = remember { mutableStateListOf<Producto>() }
     val context = LocalContext.current
-    val sharedPreferences = context.getSharedPreferences("EmprendimientoPrefs", Context.MODE_PRIVATE)
-    val idEmprendimientoGuardado = sharedPreferences.getString("idEmprendimientoGuardado", "")
-    val idEmprendimientoUsado = idEmprendimiento.ifEmpty { idEmprendimientoGuardado ?: "" }
-    Log.d("ProductoSelectionScreen", "ID Emprendimiento usado: $idEmprendimientoUsado")
 
+    LaunchedEffect(idEmprendimiento) {
+        db.collectionGroup("productos")
+            .get()
+            .addOnSuccessListener { result ->
+                val productosFiltrados = result.documents.mapNotNull { document ->
+                    document.toObject(Producto::class.java)
+                }.filter { it.idEmprendimiento == idEmprendimiento }
 
+                productos.clear()
+                productos.addAll(productosFiltrados)
 
-    LaunchedEffect(Unit) {
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null && idEmprendimientoUsado.isNotEmpty()) {
-            db.collection("users")
-                .document(user.uid)
-                .collection("emprendimientos")
-                .document(idEmprendimientoUsado)
-                .collection("productos")
-                .get()
-                .addOnSuccessListener { result ->
-                    productos.clear()
-                    result.documents.forEach { document ->
-                        val producto = document.toObject(Producto::class.java)
-                        producto?.let { productos.add(it) }
+                Log.d("ProductoSelectionScreen", "Productos filtrados: ${productos.size}")
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Error al obtener los productos", Toast.LENGTH_SHORT).show()
+                Log.e("ProductoSelectionScreenEmprendimiento", "Error al obtener los productos", it)
+            }
+    }
+
+    Column(Modifier
+        .fillMaxSize()
+        .background(color = ErizoHubTheme.Colors.background),
+        horizontalAlignment = Alignment.CenterHorizontally) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(color = ErizoHubTheme.Colors.background),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Productos",
+                fontSize = 24.sp,
+                fontFamily = customFontFamily,
+                color = Color.White,
+                modifier = Modifier
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+
+        LazyColumn(modifier = Modifier.fillMaxHeight()
+            .background(color = Color.White, RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
+        ) {
+                items(productos) { producto ->
+                    ProductoItem(producto) {
+                        navController.navigate("visualizar_producto/${producto.id_producto}")
                     }
                 }
-                .addOnFailureListener {
-                    Toast.makeText(context, "Error al obtener los productos", Toast.LENGTH_SHORT).show()
-                }
-        } else {
-            Toast.makeText(context, "ID de Emprendimiento inválido", Toast.LENGTH_SHORT).show()
-        }
-
-    }
-
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(productos) { producto ->
-            ProductoItem(producto) {
-                navController.navigate("visualizar_producto/${producto.id_producto}")
             }
 
-        }
     }
-
 }
-
 
 @Composable
 fun VisualizarProductoScreen(navController: NavController, idProducto: String) {
     val context = LocalContext.current
     var producto by remember { mutableStateOf<Producto?>(null) }
+    val db = FirebaseFirestore.getInstance()
 
     LaunchedEffect(idProducto) {
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
-            Firebase.firestore
-                .collectionGroup("productos")
-                .whereEqualTo("id_producto", idProducto)
-                .get()
-                .addOnSuccessListener { querySnapshot ->
-                    if (!querySnapshot.isEmpty) {
-                        producto = querySnapshot.documents.first().toObject(Producto::class.java)
+        Log.d("VisualizarProductoScreen", "Iniciando búsqueda del producto con ID: $idProducto")
+        db.collectionGroup("productos")
+            .whereEqualTo("id_producto", idProducto)
+            .get()
+            .addOnSuccessListener { result ->
+                Log.d("VisualizarProductoScreen", "Consulta completada, documentos encontrados: ${result.documents.size}")
+                if (!result.isEmpty) {
+                    val productoObtenido = result.documents[0].toObject(Producto::class.java)
+                    if (productoObtenido != null) {
+                        Log.d("VisualizarProductoScreen", "Producto encontrado: $productoObtenido")
+                        producto = productoObtenido
                     } else {
-                        Toast.makeText(context, "Producto no encontrado", Toast.LENGTH_SHORT).show()
+                        Log.e("VisualizarProductoScreen", "El documento no pudo ser convertido a Producto")
                     }
+                } else {
+                    Log.e("VisualizarProductoScreen", "No se encontraron documentos para el ID proporcionado")
+                    Toast.makeText(context, "Producto no encontrado", Toast.LENGTH_SHORT).show()
                 }
-                .addOnFailureListener {
-                    Toast.makeText(context, "Error al cargar el producto", Toast.LENGTH_SHORT).show()
-                    Log.e("VisualizarProductoScreen", "Error al cargar el producto", it)
-                }
-        }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("VisualizarProductoScreen", "Error en la consulta: ${exception.message}", exception)
+                Toast.makeText(context, "Error al cargar el producto", Toast.LENGTH_SHORT).show()
+            }
     }
 
     Column(
@@ -259,8 +289,9 @@ fun VisualizarProductoScreen(navController: NavController, idProducto: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
-                .background(Color.Gray),
-            contentAlignment = Alignment.Center
+                .background(color = Color.White)
+                .border(1.dp, Color.Gray),
+            contentAlignment = Alignment.Center,
         ) {
             AsyncImage(
                 model = producto?.imagen_producto ?: R.drawable.polygon_2,
@@ -302,7 +333,3 @@ fun VisualizarProductoScreen(navController: NavController, idProducto: String) {
         }
     }
 }
-
-
-
-

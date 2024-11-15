@@ -267,3 +267,59 @@ fun EmprendimientoItem(myEmprendimiento: Emprendimiento, onClick: () -> Unit) {
         }
     }
 }
+
+@Composable
+fun EmprendimientoItemNoClick(myEmprendimiento: Emprendimiento) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .shadow(5.dp, shape = RoundedCornerShape(20.dp))
+            .border(1.dp, Color.Transparent, RoundedCornerShape(20.dp))
+           ,
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFF6F6F6))
+                .border(3.dp, Color.Transparent, RoundedCornerShape(20.dp)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = myEmprendimiento.imagenEmprendimiento,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(150.dp)
+                    .padding(end = 12.dp)
+                    .clip(RoundedCornerShape(20.dp)),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+            ) {
+                Text(
+                    text = myEmprendimiento.nombre_emprendimiento,
+                    fontSize = 13.sp,
+                    fontFamily = ErizoHubTheme.Fonts.customFontFamily,
+                    color = ErizoHubTheme.Colors.background,
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                )
+                val shortenedDescription = if (myEmprendimiento.descripcion.length > 50) {
+                    "${myEmprendimiento.descripcion.take(100)}..."
+                } else {
+                    myEmprendimiento.descripcion
+                }
+                Text(
+                    text = shortenedDescription,
+                    fontSize = 10.sp,
+                    fontFamily = customFontFamily,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+}

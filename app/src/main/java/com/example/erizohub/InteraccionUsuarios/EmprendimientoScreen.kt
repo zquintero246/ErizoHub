@@ -253,30 +253,23 @@ fun VisualizarProductoScreen(navController: NavController, idProducto: String) {
     val context = LocalContext.current
     var producto by remember { mutableStateOf<Producto?>(null) }
     val db = FirebaseFirestore.getInstance()
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(idProducto) {
-        Log.d("VisualizarProductoScreen", "Iniciando búsqueda del producto con ID: $idProducto")
         db.collectionGroup("productos")
             .whereEqualTo("id_producto", idProducto)
             .get()
             .addOnSuccessListener { result ->
-                Log.d("VisualizarProductoScreen", "Consulta completada, documentos encontrados: ${result.documents.size}")
                 if (!result.isEmpty) {
                     val productoObtenido = result.documents[0].toObject(Producto::class.java)
-                    if (productoObtenido != null) {
-                        Log.d("VisualizarProductoScreen", "Producto encontrado: $productoObtenido")
-                        producto = productoObtenido
-                    } else {
-                        Log.e("VisualizarProductoScreen", "El documento no pudo ser convertido a Producto")
-                    }
+                    producto = productoObtenido
                 } else {
-                    Log.e("VisualizarProductoScreen", "No se encontraron documentos para el ID proporcionado")
                     Toast.makeText(context, "Producto no encontrado", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { exception ->
-                Log.e("VisualizarProductoScreen", "Error en la consulta: ${exception.message}", exception)
                 Toast.makeText(context, "Error al cargar el producto", Toast.LENGTH_SHORT).show()
+                Log.e("VisualizarProductoScreen", "Error en la consulta: ${exception.message}", exception)
             }
     }
 
@@ -284,52 +277,81 @@ fun VisualizarProductoScreen(navController: NavController, idProducto: String) {
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
+            .verticalScroll(scrollState)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
-                .background(color = Color.White)
-                .border(1.dp, Color.Gray),
-            contentAlignment = Alignment.Center,
-        ) {
-            AsyncImage(
-                model = producto?.imagen_producto ?: R.drawable.polygon_2,
-                contentDescription = "Imagen del producto",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
+                .height(450.dp)
+                .background(Color.White)
+                .fillMaxWidth(),
         ) {
-            Text(
-                text = producto?.nombre_producto ?: "Nombre del Producto",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                AsyncImage(
+                    model = producto?.imagen_producto ?: R.drawable.polygon_2,
+                    contentDescription = "Imagen del producto",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .border(1.dp, Color.Transparent),
+                    contentScale = ContentScale.Crop
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(bottom = 50.dp, start = 10.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Bottom,
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .fillMaxWidth(),
+                        text = producto?.nombre_producto ?: "Nombre del Producto",
+                        color = Color.Black,
+                        fontFamily = customFontFamily,
+                        fontSize = 25.sp,
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 15.dp)
+                            .fillMaxWidth(),
+                        text = producto?.descripcionProducto ?: "Descripción del Producto",
+                        color = Color.Black,
+                        fontFamily = customFontFamily,
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Start
+                    )
+                }
+            }
+        }
 
-            Text(
-                text = producto?.descripcionProducto ?: "Descripción del Producto",
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
+        Column(
+            Modifier
+                .fillMaxSize()
+                .offset(y = (-50).dp)
+                .background(color = ErizoHubTheme.Colors.background, RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.End,
+            ) {
 
-            Spacer(modifier = Modifier.height(16.dp))
+            }
 
-            Text(
-                text = "Precio: ${producto?.precio ?: 0.0}",
-                fontSize = 18.sp,
-                color = Color.Black
-            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .background(color = Color.White, RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+
+
+            }
         }
     }
 }

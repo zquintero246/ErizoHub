@@ -616,8 +616,6 @@ fun ProductoSelectionScreen(navController: NavController, idEmprendimiento: Stri
     val idEmprendimientoUsado = idEmprendimiento.ifEmpty { idEmprendimientoGuardado ?: "" }
     Log.d("ProductoSelectionScreen", "ID Emprendimiento usado: $idEmprendimientoUsado")
 
-
-
     LaunchedEffect(Unit) {
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null && idEmprendimientoUsado.isNotEmpty()) {
@@ -640,47 +638,79 @@ fun ProductoSelectionScreen(navController: NavController, idEmprendimiento: Stri
         } else {
             Toast.makeText(context, "ID de Emprendimiento inválido", Toast.LENGTH_SHORT).show()
         }
-
     }
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(productos) { producto ->
-            ProductoItem(producto) {
-                navController.navigate("visualizar_producto/${producto.id_producto}")
-            }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = ErizoHubTheme.Colors.background),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(color = ErizoHubTheme.Colors.background),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Productos",
+                fontSize = 24.sp,
+                fontFamily = customFontFamily,
+                color = Color.White,
+                modifier = Modifier
+            )
         }
-    }
 
-    Button(
-        onClick = {
-            sharedPreferences.edit().remove("idEmprendimientoGuardado").apply()
-
-            Toast.makeText(context, "Creación de emprendimiento finalizada", Toast.LENGTH_SHORT).show()
+        Spacer(modifier = Modifier.height(10.dp))
 
 
-            navController.navigate("home") {
-                popUpTo(navController.graph.startDestinationId) {
-                    inclusive = true
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxHeight()
+                .background(color = Color.White, RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
+        ) {
+            items(productos) { producto ->
+                ProductoItem(producto) {
+                    navController.navigate("visualizar_producto/${producto.id_producto}")
                 }
             }
-        },
-        colors = ButtonDefaults.buttonColors(
-            containerColor = ErizoHubTheme.Colors.primary,
-            contentColor = Color.White
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Terminar Creación",
-            fontFamily = customFontFamily,
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center
-        )
+        }
+
+        Button(
+            onClick = {
+                sharedPreferences.edit().remove("idEmprendimientoGuardado").apply()
+
+                Toast.makeText(context, "Creación de emprendimiento finalizada", Toast.LENGTH_SHORT).show()
+
+                navController.navigate("home") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                }
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ErizoHubTheme.Colors.primary,
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clip(RoundedCornerShape(25.dp))
+        ) {
+            Text(
+                text = "Terminar Creación",
+                fontFamily = customFontFamily,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center
+            )
+        }
+
     }
 
 }
+
 
 @Composable
 fun ProductoItem(producto: Producto, onClick: () -> Unit) {
@@ -690,8 +720,8 @@ fun ProductoItem(producto: Producto, onClick: () -> Unit) {
         modifier = Modifier
             .width(600.dp)
             .clickable(onClick = onClick)
-            .background(Color.White)
             .padding(16.dp)
+            .background(Color.White, shape = RoundedCornerShape(16.dp))
             .shadow(4.dp, shape = RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),

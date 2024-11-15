@@ -27,12 +27,13 @@ import com.example.erizohub.ClasesBD.Emprendimiento
 import com.example.erizohub.ClasesBD.Producto
 import com.example.erizohub.InicioApp.ErizoHubTheme
 import com.example.erizohub.Home.EmprendimientoItem
+import com.example.erizohub.Home.EmprendimientoItemNoClick
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 
 @Composable
-fun EmprendimientosActivos(navController: NavController) {
+fun EmprendimientosActivos(navController: NavController, idEmprendimiento: String) {
     var userName by remember { mutableStateOf("") }
     val listEmprendimientos = remember { mutableStateOf<List<Emprendimiento>>(emptyList()) }
     val user = FirebaseAuth.getInstance().currentUser
@@ -97,9 +98,7 @@ fun EmprendimientosActivos(navController: NavController) {
                 .padding(horizontal = 16.dp)
         ) {
             items(listEmprendimientos.value.size) { index ->
-                EmprendimientoItem(myEmprendimiento = listEmprendimientos.value[index]) {
-                    navController.navigate("emprendimientoScreen/${listEmprendimientos.value[index].nombre_emprendimiento}")
-                }
+                EmprendimientoItemNoClick(myEmprendimiento = listEmprendimientos.value[index])
             }
         }
     }

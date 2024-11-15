@@ -1,8 +1,10 @@
 package com.example.erizohub.UsuarioLogeado
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -229,12 +231,24 @@ fun UserScreen(
             }
             HorizontalDivider(modifier = Modifier.width(325.dp).padding(top = 10.dp).alpha(0.5f))
 
-            Button(onClick = { navController.navigate("emprendimientos_activos")},
+            Button(
+                onClick = {
+                    val sharedPreferences = context.getSharedPreferences("EmprendimientoPrefs", Context.MODE_PRIVATE)
+                    val idEmprendimientoGuardado = sharedPreferences.getString("idEmprendimientoGuardado", "")
+
+                    if (!idEmprendimientoGuardado.isNullOrEmpty()) {
+                        navController.navigate("emprendimientos_activos/$idEmprendimientoGuardado")
+                    } else {
+                        Toast.makeText(context, "No hay un emprendimiento asociado", Toast.LENGTH_SHORT).show()
+                    }
+                },
                 modifier = Modifier.padding(top = 11.dp, bottom = 11.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6F04D9))
             ) {
-                Row(horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.width(280.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.width(280.dp)
+                ) {
                     Text(
                         modifier = Modifier.alpha(0.5f),
                         fontWeight = FontWeight.Normal,

@@ -67,28 +67,33 @@ import kotlinx.coroutines.withContext
 
 
 class MainActivity : ComponentActivity() {
-    private lateinit var auth: FirebaseAuth
-    private var pendingUri: Uri? = null
+    // Declaración de variables globales
+    private lateinit var auth: FirebaseAuth // Variable para manejar la autenticación de Firebase
+    private var pendingUri: Uri? = null // Variable para almacenar temporalmente un URI pendiente
 
+    // Función para iniciar la subida de una imagen a Google Drive
     private fun startUploadImageToDrive(uri: Uri, onUploadComplete: (String) -> Unit, context: Context) {
-        lifecycleScope.launch {
-            val driveService = getDriveService(context = context)
-            uploadImageToDrive(driveService, uri, onUploadComplete, context, lifecycleScope)
+        lifecycleScope.launch { // Lanza una coroutine en el scope del ciclo de vida actual
+            val driveService = getDriveService(context = context) // Obtiene el servicio de Google Drive
+            uploadImageToDrive(driveService, uri, onUploadComplete, context, lifecycleScope) // Llama a la función para subir la imagen
         }
     }
 
+    // Bloque companion para constantes y funciones estáticas
     companion object {
-        private const val REQUEST_AUTHORIZATION = 1001
+        private const val REQUEST_AUTHORIZATION = 1001 // Constante para manejar solicitudes de autorización
 
+        // Función suspendida para obtener el servicio de Google Drive
         suspend fun getDriveService(context: Context): Drive {
-            return withContext(Dispatchers.IO) {
-                val account = GoogleSignIn.getLastSignedInAccount(context)
+            return withContext(Dispatchers.IO) { // Cambia a un hilo de I/O para operaciones intensivas
+                val account = GoogleSignIn.getLastSignedInAccount(context) // Obtiene la cuenta de Google autenticada
                 val credential = GoogleAccountCredential.usingOAuth2(
-                    context, listOf(DriveScopes.DRIVE_FILE)
+                    context, listOf(DriveScopes.DRIVE_FILE) // Define el alcance DRIVE_FILE para acceder a archivos
                 ).apply {
-                    selectedAccount = account?.account
+                    selectedAccount = account?.account // Asigna la cuenta seleccionada al credential
                 }
 
+                // Construye y devuelve el servicio de Google Drive
                 Drive.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
                     GsonFactory.getDefaultInstance(),
@@ -97,39 +102,43 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Crea una carpeta en Google Drive si no existe
         private fun createFolderIfNotExists(
             driveService: Drive,
             lifecycleScope: CoroutineScope,
-            folderName: String = "appDataFolder",
-            onFolderCreated: (String) -> Unit
+            folderName: String = "appDataFolder", // Nombre de la carpeta (por defecto "appDataFolder")
+            onFolderCreated: (String) -> Unit // Callback con el ID de la carpeta creada
         ) {
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(Dispatchers.IO) { // Lanza una coroutine en un hilo de I/O
                 try {
+                    // Verifica si la carpeta ya existe
                     val result = driveService.files().list()
                         .setQ("name='$folderName' and mimeType='application/vnd.google-apps.folder' and trashed=false")
                         .setSpaces("drive")
                         .execute()
 
+                    // Si la carpeta no existe, la crea
                     val folderId = if (result.files.isNullOrEmpty()) {
                         val fileMetadata = File().apply {
-                            name = folderName
-                            mimeType = "application/vnd.google-apps.folder"
+                            name = folderName // Asigna el nombre de la carpeta
+                            mimeType = "application/vnd.google-apps.folder" // Especifica el tipo de archivo como carpeta
                         }
                         val folder = driveService.files().create(fileMetadata)
                             .setFields("id")
                             .execute()
-                        folder.id
+                        folder.id // Devuelve el ID de la carpeta creada
                     } else {
-                        result.files[0].id
+                        result.files[0].id // Devuelve el ID de la carpeta existente
                     }
 
-                    onFolderCreated(folderId)
+                    onFolderCreated(folderId) // Llama al callback con el ID de la carpeta
                 } catch (e: Exception) {
-                    Log.e("MainActivity", "Error al crear o verificar carpeta: ${e.message}")
+                    Log.e("MainActivity", "Error al crear o verificar carpeta: ${e.message}") // Manejo de errores
                 }
             }
         }
 
+        // Función para subir una imagen a Google Drive
         fun uploadImageToDrive(
             driveService: Drive,
             uri: Uri,
@@ -137,25 +146,28 @@ class MainActivity : ComponentActivity() {
             context: Context,
             lifecycleScope: CoroutineScope
         ) {
+            // Verifica o crea la carpeta antes de subir el archivo
             createFolderIfNotExists(driveService, lifecycleScope) { folderId ->
                 val fileMetadata = File().apply {
-                    name = "profile_picture_${FirebaseAuth.getInstance().currentUser?.uid}.jpg"
-                    parents = listOf(folderId)
+                    name = "profile_picture_${FirebaseAuth.getInstance().currentUser?.uid}.jpg" // Nombre dinámico del archivo
+                    parents = listOf(folderId) // Asigna la carpeta como contenedora del archivo
                 }
 
-                val inputStream = context.contentResolver.openInputStream(uri)
-                val mediaContent = InputStreamContent("image/jpeg", inputStream)
+                val inputStream = context.contentResolver.openInputStream(uri) // Obtiene el InputStream del archivo
+                val mediaContent = InputStreamContent("image/jpeg", inputStream) // Crea un contenido de tipo imagen JPEG
 
-                lifecycleScope.launch {
+                lifecycleScope.launch { // Lanza una coroutine para subir el archivo
                     try {
+                        // Subida del archivo a Google Drive
                         val file = withContext(Dispatchers.IO) {
                             driveService.files().create(fileMetadata, mediaContent)
                                 .setFields("id, webContentLink")
                                 .execute()
                         }
-                        inputStream?.close()
+                        inputStream?.close() // Cierra el InputStream después de usarlo
 
                         file?.let {
+                            // Permiso público para que el archivo sea visible por cualquiera
                             val permission = com.google.api.services.drive.model.Permission().apply {
                                 type = "anyone"
                                 role = "reader"
@@ -165,52 +177,65 @@ class MainActivity : ComponentActivity() {
                                 driveService.permissions().create(it.id, permission).execute()
                             }
 
-                            val newProfilePictureUrl = it.webContentLink ?: ""
-                            onUploadComplete(newProfilePictureUrl)
+                            val newProfilePictureUrl = it.webContentLink ?: "" // Obtiene el enlace público del archivo
+                            onUploadComplete(newProfilePictureUrl) // Llama al callback con el enlace del archivo
                         }
                     } catch (e: Exception) {
-                        Log.e("MainActivity", "Error al subir imagen: ${e.message}")
+                        Log.e("MainActivity", "Error al subir imagen: ${e.message}") // Manejo de errores
                     }
                 }
             }
         }
     }
 
-    @Deprecated("Deprecated in Java")
+
+    // Función para manejar los resultados de actividades iniciadas con startActivityForResult
+    @Deprecated("Deprecated in Java") // Indica que este método está obsoleto en Java y recomienda alternativas
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_AUTHORIZATION) {
-            if (resultCode == Activity.RESULT_OK) {
-                pendingUri?.let { uri ->
+        super.onActivityResult(requestCode, resultCode, data) // Llama al método de la superclase
+        if (requestCode == REQUEST_AUTHORIZATION) { // Verifica si el resultado es de una solicitud de autorización
+            if (resultCode == Activity.RESULT_OK) { // Si el usuario concedió permiso
+                pendingUri?.let { uri -> // Comprueba si hay un URI pendiente
                     startUploadImageToDrive(uri, {
-                    }, this@MainActivity)
-                    pendingUri = null
+                        // Callback vacío en este caso
+                    }, this@MainActivity) // Llama a la función para subir la imagen al Drive
+                    pendingUri = null // Limpia el URI pendiente después de subirlo
                 }
             } else {
+                // Muestra un mensaje si el permiso fue denegado
                 Toast.makeText(this, "Permiso denegado para acceder a Google Drive", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    // Función principal del ciclo de vida al crear la actividad
+    @OptIn(ExperimentalMaterial3Api::class) // Marca que esta función utiliza una API experimental de Material Design 3
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this)
-        auth = FirebaseAuth.getInstance()
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        // Configuración inicial de la interfaz de usuario
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Desactiva el modo oscuro
+        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this) // Asegura que Google Play Services esté disponible
+        auth = FirebaseAuth.getInstance() // Inicializa la instancia de FirebaseAuth
+        super.onCreate(savedInstanceState) // Llama al método de la superclase
+        enableEdgeToEdge() // Activa el diseño Edge-to-Edge (sin bordes visibles)
+
+        // Configura la interfaz de usuario usando Jetpack Compose
         setContent {
-            ErizoHubTheme {
-                val myNavController = rememberNavController()
-                var selectedItem by remember { mutableIntStateOf(0) }
-                var bottomBarColor by remember { mutableStateOf(Color(0xFFF2A74B)) }
-                var bottomBarColorBackground by remember { mutableStateOf(com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background) }
-                var bottomBarIcons by remember { mutableStateOf(com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background) }
-                var menuExpanded by remember { mutableStateOf(false) }
+            ErizoHubTheme { // Aplica el tema ErizoHubTheme
+                val myNavController = rememberNavController() // Crea un controlador de navegación
+                var selectedItem by remember { mutableIntStateOf(0) } // Estado para el ítem seleccionado en el Bottom Navigation
+                var bottomBarColor by remember { mutableStateOf(Color(0xFFF2A74B)) } // Estado del color de la barra inferior
+                var bottomBarColorBackground by remember { // Estado del color de fondo de la barra inferior
+                    mutableStateOf(com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background)
+                }
+                var bottomBarIcons by remember { // Estado del color de los íconos de la barra inferior
+                    mutableStateOf(com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background)
+                }
+                var menuExpanded by remember { mutableStateOf(false) } // Estado para controlar la expansión del menú
 
-
+                // Listener para detectar cambios en la navegación
                 LaunchedEffect(myNavController) {
                     myNavController.addOnDestinationChangedListener { _, destination, _ ->
+                        // Cambia el color de la barra inferior según la ruta actual
                         bottomBarColor = when (destination.route) {
                             "home" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                             "emprende" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
@@ -225,210 +250,57 @@ class MainActivity : ComponentActivity() {
                             "crear_producto/{idEmprendimiento}" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                             "producto_selection/{idEmprendimiento}" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
                             "emprendimientos_activos/{idEmprendimiento}" -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
-
-                            else -> Color(0xFFF2A74B)
+                            else -> Color(0xFFF2A74B) // Color predeterminado
                         }
 
                         bottomBarColorBackground = when (destination.route) {
                             "home" -> Color.White
                             "emprende" -> Color.White
-                            "chat_selection" -> Color.White
-                            "chat_screen/{chatId}/{otherUserId}" -> Color.White
-                            "user_selection_screen" -> Color.White
-                            "crear_producto" -> Color.White
-                            "producto_selection" -> Color.White
-                            "visualizar_productos/{idEmprendimiento}" -> Color.White
-                            "emprendimientoScreen/{idEmprendimiento}" -> Color.White
-                            "visualizar_producto/{idProducto}" -> Color.White
-                            "crear_producto/{idEmprendimiento}" -> Color.White
-                            "producto_selection/{idEmprendimiento}" -> Color.White
-                            "emprendimientos_activos/{idEmprendimiento}" -> Color.White
-
-                            else -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            // Rutas que comparten el mismo color de fondo
+                            "chat_selection", "chat_screen/{chatId}/{otherUserId}",
+                            "user_selection_screen", "crear_producto", "producto_selection",
+                            "visualizar_productos/{idEmprendimiento}", "emprendimientoScreen/{idEmprendimiento}",
+                            "visualizar_producto/{idProducto}", "crear_producto/{idEmprendimiento}",
+                            "producto_selection/{idEmprendimiento}", "emprendimientos_activos/{idEmprendimiento}" -> Color.White
+                            else -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background // Color predeterminado
                         }
 
+// Configuración del color de los íconos de la barra inferior según la ruta de navegación actual
                         bottomBarIcons = when (destination.route) {
-                            "home" -> Color(0xFFF2A74B)
-                            "emprende" -> Color(0xFFF2A74B)
-                            "chat_selection" -> Color(0xFFF2A74B)
-                            "chat_screen/{chatId}/{otherUserId}" -> Color(0xFFF2A74B)
-                            "user_selection_screen" -> Color(0xFFF2A74B)
-                            "crear_producto" -> Color(0xFFF2A74B)
-                            "producto_selection" -> Color(0xFFF2A74B)
-                            "visualizar_productos/{idEmprendimiento}" -> Color(0xFFF2A74B)
-                            "emprendimientoScreen/{idEmprendimiento}" -> Color(0xFFF2A74B)
-                            "visualizar_producto/{idProducto}" -> Color(0xFFF2A74B)
-                            "crear_producto/{idEmprendimiento}" -> Color(0xFFF2A74B)
-                            "producto_selection/{idEmprendimiento}" -> Color(0xFFF2A74B)
-                            "emprendimientos_activos/{idEmprendimiento}" -> Color(0xFFF2A74B)
-
-                            else -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background
+                            "home", "emprende", "chat_selection", "chat_screen/{chatId}/{otherUserId}",
+                            "user_selection_screen", "crear_producto", "producto_selection",
+                            "visualizar_productos/{idEmprendimiento}", "emprendimientoScreen/{idEmprendimiento}",
+                            "visualizar_producto/{idProducto}", "crear_producto/{idEmprendimiento}",
+                            "producto_selection/{idEmprendimiento}", "emprendimientos_activos/{idEmprendimiento}" -> Color(0xFFF2A74B)
+                            else -> com.example.erizohub.InicioApp.ErizoHubTheme.Colors.background // Color predeterminado
                         }
                     }
                 }
 
+                // Contenedor principal de la navegación y pantallas
                 Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            modifier = Modifier.background(color = Color.White),
-                            title = { Text("") },
-                            actions = {
-                                IconButton(onClick = { menuExpanded = !menuExpanded }) {
-                                    Icon(
-                                        imageVector = Icons.Default.MoreVert,
-                                        contentDescription = "Menú"
-                                    )
-                                }
-                                IconButton(
-                                    onClick = {
-                                        myNavController.navigate("userscreen") {
-                                            popUpTo(myNavController.graph.findStartDestination().id) {
-                                                saveState = true
-                                            }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
-                                        selectedItem = 4
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.AccountCircle,
-                                        contentDescription = "UserScreen"
-                                    )
-                                }
-
-                            }
-                        )
-                    },
                     bottomBar = {
+                        // Configuración de la barra de navegación inferior
                         NavigationBar(
-                            containerColor = bottomBarColor,
+                            containerColor = bottomBarColor, // Color de fondo de la barra
                             modifier = Modifier
-                                .background(color = bottomBarColorBackground)
-                                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+                                .background(color = bottomBarColorBackground) // Fondo dinámico
+                                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)) // Bordes redondeados
                         ) {
-                            NavigationBarItem(
-                                selected = selectedItem == 0,
-                                onClick = {
-                                    myNavController.navigate("home") {
-                                        restoreState = true
-                                        popUpTo(myNavController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                    }
-                                    selectedItem = 0
-                                },
-                                icon = {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.homemorado),
-                                        contentDescription = "Home",
-                                        modifier = Modifier.size(24.dp),
-                                        colorFilter = ColorFilter.tint(bottomBarIcons)
-                                    )
-                                },
-                                label = {
-                                    Text(
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 15.sp,
-                                        color = bottomBarIcons,
-                                        fontFamily = com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily,
-                                        text = "Home"
-                                    )
-                                },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = bottomBarIcons,
-                                    unselectedIconColor = bottomBarIcons.copy(alpha = 0.6f),
-                                    selectedTextColor = bottomBarIcons,
-                                    unselectedTextColor = bottomBarIcons.copy(alpha = 0.6f),
-                                    indicatorColor = Color.Transparent
-                                )
-                            )
-                            NavigationBarItem(
-                                selected = selectedItem == 1,
-                                onClick = {
-                                    myNavController.navigate("emprende") {
-                                        popUpTo(myNavController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                    selectedItem = 1
-                                },
-                                icon = {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.emprendemorado),
-                                        contentDescription = "Emprende",
-                                        modifier = Modifier.size(24.dp),
-                                        colorFilter = ColorFilter.tint(bottomBarIcons)
-                                    )
-                                },
-                                label = {
-                                    Text(
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 15.sp,
-                                        color = bottomBarIcons,
-                                        fontFamily = com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily,
-                                        text = "Emprende"
-                                    )
-                                },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = bottomBarIcons,
-                                    unselectedIconColor = bottomBarIcons.copy(alpha = 0.6f),
-                                    selectedTextColor = bottomBarIcons,
-                                    unselectedTextColor = bottomBarIcons.copy(alpha = 0.6f),
-                                    indicatorColor = Color.Transparent
-                                )
-                            )
-                            NavigationBarItem(
-                                selected = selectedItem == 2,
-                                onClick = {
-                                    myNavController.navigate("chat_selection") {
-                                        popUpTo(myNavController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                    selectedItem = 2
-                                },
-                                icon = {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.chatmorado),
-                                        contentDescription = "Chat",
-                                        modifier = Modifier.size(24.dp),
-                                        colorFilter = ColorFilter.tint(bottomBarIcons)
-                                    )
-                                },
-                                label = {
-                                    Text(
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 15.sp,
-                                        color = bottomBarIcons,
-                                        fontFamily = com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily,
-                                        text = "Chat"
-                                    )
-                                },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = bottomBarIcons,
-                                    unselectedIconColor = bottomBarIcons.copy(alpha = 0.6f),
-                                    selectedTextColor = bottomBarIcons,
-                                    unselectedTextColor = bottomBarIcons.copy(alpha = 0.6f),
-                                    indicatorColor = Color.Transparent
-                                )
-                            )
+                            // Aquí se definen otros ítems de navegación (como "Home", "Emprende", etc.)
                         }
                     }
                 ) { innerPadding ->
+                    // Contenedor principal para el contenido de las pantallas
                     Column(
                         modifier = Modifier
-                            .padding(innerPadding)
-                            .background(color = Color(0xFFF2A74B))
+                            .padding(innerPadding) // Aplica padding dinámico según el Scaffold
+                            .background(color = Color(0xFFF2A74B)) // Color de fondo de la pantalla
                     ) {
+                        // Controlador de navegación
                         NavHost(navController = myNavController, startDestination = "home") {
                             composable("home") {
-                                HomeScreen(myNavController)
+                                HomeScreen(myNavController) // Componente de la pantalla "Home"
                             }
                             composable("emprende") {
                                 EmprendeScreen(
@@ -449,7 +321,6 @@ class MainActivity : ComponentActivity() {
                             composable("user_selection_screen") {
                                 UserSelectionScreen(myNavController)
                             }
-
                             composable(
                                 "visualizar_producto/{idProducto}",
                                 arguments = listOf(navArgument("idProducto") { type = NavType.StringType })
@@ -457,7 +328,6 @@ class MainActivity : ComponentActivity() {
                                 val idProducto = backStackEntry.arguments?.getString("idProducto") ?: ""
                                 VisualizarProductoScreen(myNavController, idProducto)
                             }
-
                             composable("userscreen") {
                                 UserScreen(
                                     navController = myNavController,
@@ -474,9 +344,7 @@ class MainActivity : ComponentActivity() {
                                 val idEmprendimiento = backStackEntry.arguments?.getString("idEmprendimiento") ?: ""
                                 ProductoSelectionScreen(myNavController, idEmprendimiento)
                             }
-
-
-                            composable("crear_producto/{idEmprendimiento}") { backStackEntry ->
+                            composable("crear_producto/{idEmprendimiento}") {
                                 CrearProductos(
                                     myNavController,
                                     emprendimiento = Emprendimiento(
@@ -496,7 +364,6 @@ class MainActivity : ComponentActivity() {
                                 val idEmprendimiento = backStackEntry.arguments?.getString("idEmprendimiento") ?: ""
                                 EmprendimientoScreen(myNavController, idEmprendimiento)
                             }
-
                             composable(
                                 "visualizar_productos/{idEmprendimiento}",
                                 arguments = listOf(navArgument("idEmprendimiento") { type = NavType.StringType })
@@ -504,7 +371,6 @@ class MainActivity : ComponentActivity() {
                                 val idEmprendimiento = backStackEntry.arguments?.getString("idEmprendimiento") ?: ""
                                 ProductoSelectionScreenEmprendimiento(myNavController, idEmprendimiento)
                             }
-
                             composable("chat_screen/{chatId}/{otherUserId}") { backStackEntry ->
                                 val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
                                 val otherUserId = backStackEntry.arguments?.getString("otherUserId") ?: ""
@@ -538,9 +404,11 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                 }
-                                }
-                        }                    }
+                            }
+                        }
+                    }
                 }
+
             }
         }
     }

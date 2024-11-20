@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.erizohub.ClasesBD.Comentario
 import com.example.erizohub.ClasesBD.Emprendimiento
 import com.example.erizohub.ClasesBD.Producto
 import com.example.erizohub.InicioApp.ErizoHubTheme
@@ -107,7 +108,6 @@ fun HomeScreen(navController: NavController) {
                                         id_producto = productoMap["id_producto"] as? String ?: "",
                                         nombre_producto = productoMap["nombre_producto"] as? String ?: "",
                                         descripcionProducto = productoMap["descripcionProducto"] as? String ?: "",
-                                        precio = (productoMap["precio"] as? Number)?.toDouble() ?: 0.0,
                                         imagen_producto = productoMap["imagen_producto"] as? String ?: ""
                                     )
                                 } catch (e: Exception) {
@@ -115,9 +115,19 @@ fun HomeScreen(navController: NavController) {
                                     null
                                 }
                             }?.toMutableList() ?: mutableListOf(),
-                            comentarios = (document.get("comentarios") as? List<String>)?.toMutableList() ?: mutableListOf()
-                        )
-                    } catch (e: Exception) {
+                            comentarios = (document.get("comentarios") as? List<Map<String, Any>>)?.mapNotNull { comentarioMap ->
+                                try {
+                                    Comentario(
+                                        usuario = comentarioMap["usuario"] as? String ?: "",
+                                        contenido = comentarioMap["contenido"] as? String ?: ""
+                                    )
+                                } catch (e: Exception) {
+                                    Log.e("HomeScreen", "Error al parsear comentario: $comentarioMap", e)
+                                    null
+                                }
+                            }?.toMutableList() ?: mutableListOf(),
+                    }
+                    catch (e: Exception) {
                         Log.e("HomeScreen", "Error al parsear emprendimiento: ${document.id}", e)
                         null
                     }

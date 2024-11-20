@@ -15,14 +15,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.erizohub.ClasesBD.Comentario
 import com.example.erizohub.ClasesBD.Emprendimiento
 import com.example.erizohub.ClasesBD.Producto
 import com.example.erizohub.Home.ProductoItem
@@ -44,37 +51,35 @@ import com.example.erizohub.InicioApp.ErizoHubTheme
 import com.example.erizohub.InicioApp.ErizoHubTheme.Fonts.customFontFamily
 import com.example.erizohub.R
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 
 
 @Composable
 fun EmprendimientoScreen(navController: NavController, idEmprendimiento: String) {
-    val context = LocalContext.current
     val db = Firebase.firestore
     var emprendimiento by remember { mutableStateOf<Emprendimiento?>(null) }
+    var comentarios by remember { mutableStateOf(mutableListOf<Comentario>()) }
+    var nuevoComentario by remember { mutableStateOf("") }
+    var likes by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
+    val user = FirebaseAuth.getInstance().currentUser
 
     LaunchedEffect(idEmprendimiento) {
-        db.collectionGroup("emprendimientos")
-            .whereEqualTo("idEmprendimiento", idEmprendimiento)
-            .get()
-            .addOnSuccessListener { result ->
-                if (!result.isEmpty) {
-                    val document = result.documents[0]
-                    document.toObject(Emprendimiento::class.java)?.let {
-                        emprendimiento = it
-                    }
-                } else {
-                    Toast.makeText(context, "Emprendimiento no encontrado", Toast.LENGTH_SHORT).show()
+        db.collection("emprendimientos").document(idEmprendimiento).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    emprendimiento = document.toObject(Emprendimiento::class.java)
+                    likes = document.getLong("likes")?.toInt() ?: 0
+                    comentarios.clear()
+                    comentarios.addAll((document.get("comentarios") as? List<Map<String, String>>)?.map {
+                        Comentario(it["usuario"] ?: "", it["contenido"] ?: "")
+                    } ?: emptyList())
                 }
             }
-            .addOnFailureListener {
-                Toast.makeText(context, "Error al cargar el emprendimiento", Toast.LENGTH_SHORT).show()
-                Log.e("EmprendimientoScreen", "Error al cargar el emprendimiento", it)
-            }
     }
-
 
     Column(
         modifier = Modifier
@@ -88,104 +93,105 @@ fun EmprendimientoScreen(navController: NavController, idEmprendimiento: String)
                 .background(Color.White)
                 .fillMaxWidth(),
         ) {
-            Box(
+            AsyncImage(
+                model = emprendimiento?.imagenEmprendimiento ?: R.drawable.polygon_2,
+                contentDescription = "Imagen del emprendimiento",
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter
+                contentScale = ContentScale.Crop
+            )
+
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                verticalArrangement = Arrangement.Bottom,
             ) {
-                AsyncImage(
-                    model = emprendimiento?.imagenEmprendimiento ?: R.drawable.polygon_2,
-                    contentDescription = "Imagen del emprendimiento",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .border(1.dp, Color.Transparent),
-                    contentScale = ContentScale.Crop
+                Text(
+                    text = emprendimiento?.nombre_emprendimiento ?: "Nombre del Emprendimiento",
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(bottom = 50.dp, start = 10.dp)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Bottom,
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp)
-                            .fillMaxWidth(),
-                        text = emprendimiento?.nombre_emprendimiento ?: "Nombre del Emprendimiento",
-                        color = Color.Black,
-                        fontFamily = customFontFamily,
-                        fontSize = 25.sp,
-                    )
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 15.dp)
-                            .fillMaxWidth(),
-                        text = emprendimiento?.descripcion ?: "Descripción del Emprendimiento",
-                        color = Color.Black,
-                        fontFamily = customFontFamily,
-                        fontSize = 15.sp,
-                        textAlign = TextAlign.Start
-                    )
-                }
+                Text(
+                    text = emprendimiento?.descripcion ?: "Descripción del Emprendimiento",
+                    fontSize = 15.sp,
+                    color = Color.Gray
+                )
             }
         }
 
-        Column(
-            Modifier
-                .fillMaxSize()
-                .offset(y = (-50).dp)
-                .background(color = ErizoHubTheme.Colors.background, RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.End,
-            ) {
-                Button(
-                    onClick = {
-                        if (idEmprendimiento.isNotBlank()) {
-                            navController.navigate("visualizar_productos/$idEmprendimiento")
-                        } else {
-                            Toast.makeText(context, "Emprendimiento no válido", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = ErizoHubTheme.Colors.primary
-                    ),
-                    modifier = Modifier.padding(end = 20.dp, top = 10.dp)
-                ) {
-                    Text(
-                        text = "Productos",
-                        fontFamily = customFontFamily,
-                        fontSize = 15.sp,
-                    )
-                    Icon(
-                        modifier = Modifier.padding(start = 5.dp),
-                        painter = painterResource(id = R.drawable.arrow_icon),
-                        contentDescription = "Productos",
-                        tint = ErizoHubTheme.Colors.primary
-                    )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = {
+                    likes += 1
+                    db.collection("emprendimientos").document(idEmprendimiento).update("likes", likes)
+                }) {
+                    Icon(Icons.Filled.Favorite, contentDescription = null, tint = Color.Red)
                 }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
+                Text(text = "$likes")
             }
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .background(color = Color.White, RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Button(
+                onClick = { navController.navigate("producto_selection/$idEmprendimiento") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ErizoHubTheme.Colors.primary
+                )
             ) {
-                Text(text = "Comentarios", color = Color.Black, fontFamily = customFontFamily, fontSize = 20.sp)
+                Text("Productos", color = Color.White)
             }
-
         }
 
+        Text(
+            text = "Comentarios",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            items(comentarios) { comentario ->
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.AccountCircle, contentDescription = null, tint = Color.Gray)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Text(text = comentario.usuario, fontWeight = FontWeight.Bold)
+                        Text(text = comentario.contenido, color = Color.Gray)
+                    }
+                }
+            }
+        }
 
+        // Campo para agregar un nuevo comentario
+        OutlinedTextField(
+            value = nuevoComentario,
+            onValueChange = { nuevoComentario = it },
+            label = { Text("Añade un comentario...") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
+        Button(
+            onClick = {
+                if (nuevoComentario.isNotBlank() && user != null) {
+                    val comentario = Comentario(user.displayName ?: "Usuario", nuevoComentario)
+                    db.collection("emprendimientos").document(idEmprendimiento)
+                        .update("comentarios", FieldValue.arrayUnion(comentario))
+                    comentarios.add(comentario)
+                    nuevoComentario = ""
+                }
+            },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text("Comentar")
+        }
     }
 }
+
 
 @Composable
 fun ProductoSelectionScreenEmprendimiento(navController: NavController, idEmprendimiento: String) {

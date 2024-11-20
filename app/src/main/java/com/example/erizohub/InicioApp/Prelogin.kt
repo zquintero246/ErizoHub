@@ -36,82 +36,92 @@ import com.example.erizohub.R
 
 @Composable
 fun PreLogin(navController: NavController, onButtonClickIniciar: () -> Unit, onButtonClickRegistrarse: () -> Unit) {
+    // Variable de estado para controlar la visibilidad de la animación.
     var visible by remember { mutableStateOf(false) }
 
+    // Efecto que se ejecuta cuando el componente se monta, activando la visibilidad.
     LaunchedEffect(Unit) {
         visible = true
     }
 
+    // Contenedor principal de tipo columna para organizar el contenido verticalmente.
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom,
+        modifier = Modifier.fillMaxSize(), // Ocupa todo el tamaño disponible.
+        verticalArrangement = Arrangement.Bottom // Posiciona los elementos en la parte inferior.
     ) {
+        // Imagen del logo.
         Image(
-            painter = painterResource(id = R.drawable.erizo),
-            contentDescription = "Logo",
+            painter = painterResource(id = R.drawable.erizo), // Recurso de la imagen del logo.
+            contentDescription = "Logo", // Descripción para accesibilidad.
             modifier = Modifier
-                .width(400.dp)
-                .height(400.dp)
-                .padding(bottom = 50.dp)
+                .width(400.dp) // Ancho de la imagen.
+                .height(400.dp) // Altura de la imagen.
+                .padding(bottom = 50.dp) // Margen inferior.
         )
 
+        // Visibilidad animada para mostrar la sección de bienvenida.
         AnimatedVisibility(
-            visible = visible,
-            enter = slideInVertically(
-                initialOffsetY = { it }
-            ) + fadeIn(),
-            exit = fadeOut()
+            visible = visible, // Controla si el contenido es visible.
+            enter = slideInVertically( // Animación de entrada deslizándose verticalmente.
+                initialOffsetY = { it } // Comienza desde su posición inicial.
+            ) + fadeIn(), // También incluye un efecto de desvanecimiento al aparecer.
+            exit = fadeOut() // Efecto de desvanecimiento al desaparecer.
         ) {
+            // Contenedor para la sección de bienvenida.
             Box(
                 modifier = Modifier
-                    .height(247.dp)
-                    .width(412.dp)
-                    .clip(RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
-                    .background(color = ErizoHubTheme.Colors.background)
+                    .height(247.dp) // Altura del contenedor.
+                    .width(412.dp) // Ancho del contenedor.
+                    .clip(RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)) // Bordes redondeados en la parte superior.
+                    .background(color = ErizoHubTheme.Colors.background) // Fondo con el color del tema.
             ) {
+                // Texto de bienvenida centrado en la parte superior del contenedor.
                 Text(
-                    text = "Bienvenido",
+                    text = "Bienvenido", // Texto de bienvenida.
                     modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 70.dp),
-                    fontSize = 30.sp,
-                    fontFamily = ErizoHubTheme.Fonts.customFontFamily,
-                    color = ErizoHubTheme.Colors.primary,
+                        .align(Alignment.TopCenter) // Alineado en el centro superior.
+                        .padding(top = 70.dp), // Margen superior.
+                    fontSize = 30.sp, // Tamaño del texto.
+                    fontFamily = ErizoHubTheme.Fonts.customFontFamily, // Fuente personalizada.
+                    color = ErizoHubTheme.Colors.primary // Color basado en el tema.
                 )
 
+                // Botones para iniciar sesión o registrarse, alineados en la parte inferior.
                 Row(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 50.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        .align(Alignment.BottomCenter) // Alineado en el centro inferior.
+                        .padding(bottom = 50.dp), // Margen inferior.
+                    horizontalArrangement = Arrangement.spacedBy(16.dp) // Espaciado entre los botones.
                 ) {
+                    // Botón de "Iniciar sesión".
                     Button(
-                        onClick = onButtonClickIniciar,
+                        onClick = onButtonClickIniciar, // Acción al presionar el botón.
                         modifier = Modifier
-                            .width(160.dp)
-                            .height(54.dp),
-                        colors = ButtonDefaults.buttonColors(Color.Black)
+                            .width(160.dp) // Ancho del botón.
+                            .height(54.dp), // Altura del botón.
+                        colors = ButtonDefaults.buttonColors(Color.Black) // Fondo negro para el botón.
                     ) {
                         Text(
-                            text = "Iniciar sesión",
-                            fontSize = 15.sp,
-                            fontFamily = ErizoHubTheme.Fonts.customFontFamily,
-                            color = ErizoHubTheme.Colors.primary,
+                            text = "Iniciar sesión", // Texto del botón.
+                            fontSize = 15.sp, // Tamaño de la fuente.
+                            fontFamily = ErizoHubTheme.Fonts.customFontFamily, // Fuente personalizada.
+                            color = ErizoHubTheme.Colors.primary // Color del texto basado en el tema.
                         )
                     }
 
+                    // Botón de "Registrarse".
                     Button(
-                        onClick = onButtonClickRegistrarse,
+                        onClick = onButtonClickRegistrarse, // Acción al presionar el botón.
                         modifier = Modifier
-                            .width(160.dp)
-                            .height(54.dp),
-                        colors = ButtonDefaults.buttonColors(Color.Black)
+                            .width(160.dp) // Ancho del botón.
+                            .height(54.dp), // Altura del botón.
+                        colors = ButtonDefaults.buttonColors(Color.Black) // Fondo negro para el botón.
                     ) {
                         Text(
-                            text = "Registrarse",
-                            fontSize = 15.sp,
-                            fontFamily = ErizoHubTheme.Fonts.customFontFamily,
-                            color = ErizoHubTheme.Colors.primary,
+                            text = "Registrarse", // Texto del botón.
+                            fontSize = 15.sp, // Tamaño de la fuente.
+                            fontFamily = ErizoHubTheme.Fonts.customFontFamily, // Fuente personalizada.
+                            color = ErizoHubTheme.Colors.primary // Color del texto basado en el tema.
                         )
                     }
                 }
@@ -119,8 +129,3 @@ fun PreLogin(navController: NavController, onButtonClickIniciar: () -> Unit, onB
         }
     }
 }
-
-
-
-
-

@@ -44,123 +44,131 @@ import com.google.firebase.firestore.FirebaseFirestore
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
-    // Variables de estado
-    var emailinput by remember { mutableStateOf("") }
-    var nameUserinput by remember { mutableStateOf("") }
-    var profilepictureinput by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    val auth = FirebaseAuth.getInstance()
-    val db = FirebaseFirestore.getInstance()
-    val context = LocalContext.current
+    // Variables de estado para los campos de entrada.
+    var emailinput by remember { mutableStateOf("") } // Campo de entrada para el email.
+    var nameUserinput by remember { mutableStateOf("") } // Campo de entrada para el nombre de usuario.
+    var profilepictureinput by remember { mutableStateOf("") } // Campo de entrada para la URL de la foto de perfil (opcional).
+    var password by remember { mutableStateOf("") } // Campo de entrada para la contraseña.
+    val auth = FirebaseAuth.getInstance() // Instancia de Firebase Auth.
+    val db = FirebaseFirestore.getInstance() // Instancia de Firestore.
+    val context = LocalContext.current // Contexto actual para mostrar mensajes y navegar.
 
-
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(color = ErizoHubTheme.Colors.background),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ){
-        Box(modifier = Modifier
-            .background(color = ErizoHubTheme.Colors.background)
-            .fillMaxWidth()
-            .height(250.dp),
-            contentAlignment = Alignment.BottomCenter
+    // Contenedor principal.
+    Column(
+        modifier = Modifier
+            .fillMaxSize() // Ocupa toda la pantalla.
+            .background(color = ErizoHubTheme.Colors.background), // Fondo con color del tema.
+        horizontalAlignment = Alignment.CenterHorizontally, // Contenido centrado horizontalmente.
+        verticalArrangement = Arrangement.Top // Contenido comienza desde la parte superior.
+    ) {
+        // Encabezado.
+        Box(
+            modifier = Modifier
+                .background(color = ErizoHubTheme.Colors.background) // Fondo con color del tema.
+                .fillMaxWidth()
+                .height(250.dp), // Altura del encabezado.
+            contentAlignment = Alignment.BottomCenter // Contenido centrado en la parte inferior.
         ) {
             Text(
-                text = "Registrarse",
-                modifier = Modifier,
-                fontSize = 40.sp,
-                fontFamily = customFontFamily,
-                color = ErizoHubTheme.Colors.primary
+                text = "Registrarse", // Título.
+                fontSize = 40.sp, // Tamaño de la fuente grande.
+                fontFamily = customFontFamily, // Fuente personalizada.
+                color = ErizoHubTheme.Colors.primary // Color primario del tema.
             )
         }
 
-
-            Column (modifier = Modifier
+        // Formulario para el registro.
+        Column(
+            modifier = Modifier
                 .fillMaxWidth()
                 .width(648.dp)
-                .background(Color.White, shape = RoundedCornerShape(topStart=30.dp,topEnd=30.dp)),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(23.dp)
-            ) {
-                Spacer(Modifier.height(30.dp))
-                TextField(
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = ErizoHubTheme.Colors.textField,
-                    ),
-                    value = nameUserinput,
-                    onValueChange = {nameUserinput = it},
-                    label = { Text("Nombre de usuario",
+                .background(Color.White, shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)), // Fondo blanco con bordes redondeados.
+            horizontalAlignment = Alignment.CenterHorizontally, // Contenido centrado horizontalmente.
+            verticalArrangement = Arrangement.spacedBy(23.dp) // Espaciado entre los elementos.
+        ) {
+            Spacer(Modifier.height(30.dp)) // Espaciador inicial.
+
+            // Campo para el nombre de usuario.
+            TextField(
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = ErizoHubTheme.Colors.textField // Color del campo.
+                ),
+                value = nameUserinput, // Valor actual del campo.
+                onValueChange = { nameUserinput = it }, // Actualiza el valor al escribir.
+                label = {
+                    Text(
+                        "Nombre de usuario", // Etiqueta del campo.
+                        color = ErizoHubTheme.Colors.textFieldText, // Color del texto.
+                        fontFamily = customFontFamily, // Fuente personalizada.
+                        fontSize = 10.sp // Tamaño de la fuente.
+                    )
+                },
+                modifier = Modifier
+                    .height(61.dp)
+                    .width(367.dp)
+                    .clip(RoundedCornerShape(50.dp)) // Bordes redondeados.
+                    .background(color = ErizoHubTheme.Colors.textField) // Fondo.
+                    .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp)) // Borde.
+            )
+
+            // Campo para el email.
+            TextField(
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = ErizoHubTheme.Colors.textField
+                ),
+                value = emailinput,
+                onValueChange = { emailinput = it },
+                label = {
+                    Text(
+                        "Correo", // Etiqueta.
                         color = ErizoHubTheme.Colors.textFieldText,
                         fontFamily = customFontFamily,
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
                         fontSize = 10.sp
                     )
+                },
+                modifier = Modifier
+                    .height(61.dp)
+                    .width(367.dp)
+                    .clip(RoundedCornerShape(50.dp))
+                    .background(color = ErizoHubTheme.Colors.textField)
+                    .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+            )
 
-                    },
-                    modifier = Modifier
-                        .height(61.dp)
-                        .width(367.dp)
-                        .clip(RoundedCornerShape(50.dp))
-                        .background(color = ErizoHubTheme.Colors.textField)
-                        .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+            // Campo para la contraseña.
+            TextField(
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = ErizoHubTheme.Colors.textField
+                ),
+                value = password,
+                onValueChange = { password = it },
+                label = {
+                    Text(
+                        "Contraseña",
+                        color = ErizoHubTheme.Colors.textFieldText,
+                        fontFamily = customFontFamily,
+                        fontSize = 10.sp
+                    )
+                },
+                modifier = Modifier
+                    .height(61.dp)
+                    .width(367.dp)
+                    .clip(RoundedCornerShape(50.dp))
+                    .background(color = ErizoHubTheme.Colors.textField)
+                    .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
+            )
+        }
 
-                )
-                TextField(
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = ErizoHubTheme.Colors.textField,
-                    ),
-                    value = emailinput,
-                    onValueChange = {emailinput = it},
-                    label = {
-                        Text("Correo",
-                            color = ErizoHubTheme.Colors.textFieldText,
-                            fontFamily = customFontFamily,
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            fontSize = 10.sp
-                        )
-                    },
-                    modifier = Modifier
-                        .height(61.dp)
-                        .width(367.dp)
-                        .clip(RoundedCornerShape(50.dp))
-                        .background(color = ErizoHubTheme.Colors.textField)
-                        .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
-                )
-
-
-
-                TextField(
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = ErizoHubTheme.Colors.textField,
-                    ),
-                    value = password,
-                    onValueChange = {password = it},
-                    label = {
-                        Text("Contraseña",
-                            color = ErizoHubTheme.Colors.textFieldText,
-                            fontFamily = customFontFamily,
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            fontSize = 10.sp
-                        )
-                    },
-                    modifier = Modifier
-                        .height(61.dp)
-                        .width(367.dp)
-                        .clip(RoundedCornerShape(50.dp))
-                        .background(color = ErizoHubTheme.Colors.textField)
-                        .border(10.dp, ErizoHubTheme.Colors.textField, RoundedCornerShape(50.dp))
-                )
-
-
-            }
-            Column(modifier = Modifier
+        // Botón y opciones de registro.
+        Column(
+            modifier = Modifier
                 .fillMaxSize()
-                .background(color = Color.White),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally,){
-
-                Button(onClick = {
+                .background(color = Color.White), // Fondo blanco.
+            verticalArrangement = Arrangement.SpaceBetween, // Espaciado automático.
+            horizontalAlignment = Alignment.CenterHorizontally // Contenido centrado horizontalmente.
+        ) {
+            // Botón para registrarse.
+            Button(
+                onClick = {
                     if (nameUserinput.isEmpty() || emailinput.isEmpty() || password.isEmpty()) {
                         Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()
                     } else {
@@ -174,15 +182,10 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                                             userName = nameUserinput,
                                             emailc = emailinput,
                                             profilePictureUrl = profilepictureinput
-
                                         )
                                         db.collection("users").document(user.uid).set(newUser)
                                             .addOnSuccessListener {
                                                 Toast.makeText(context, "Se guardó correctamente", Toast.LENGTH_SHORT).show()
-                                                nameUserinput = ""
-                                                emailinput = ""
-                                                password = ""
-                                                profilepictureinput = ""
                                                 navController.navigate("login")
                                             }
                                             .addOnFailureListener { e ->
@@ -190,42 +193,35 @@ fun Registrarse(navController: NavController, onGoogleSignUpClick: () -> Unit) {
                                             }
                                     }
                                 } else {
-                                    if (task.exception is FirebaseAuthUserCollisionException) {
-                                        Toast.makeText(context, "Este correo ya está registrado. Intente iniciar sesión.", Toast.LENGTH_LONG).show()
-                                        navController.navigate("login")
-                                    } else {
-                                        val errorMessage = task.exception?.message ?: "Error desconocido"
-                                        Toast.makeText(context, "Error al registrar usuario: $errorMessage", Toast.LENGTH_LONG).show()
-                                        Log.e("AuthError", "Error al registrar usuario", task.exception)
-                                    }
+                                    val errorMessage = task.exception?.message ?: "Error desconocido"
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                                 }
                             }
                     }
                 },
-                    modifier = Modifier
-                        .padding(top = 29.dp)
-                        .width(367.dp)
-                        .height(61.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Black
-                    ),
-                ) {
-                    Text(
-                        text = "Registrarse",
-                        color = ErizoHubTheme.Colors.primary,
-                        fontFamily = customFontFamily,
-                        fontSize = 20.sp
-                    )
-                }
-
-                DividerLogin(modifier = Modifier.padding(top = 20.dp, bottom = 20.dp))
-                Column{
-                    ButtonGoogle(
-                        text = "Continuar con Google",
-                        logoResId = R.drawable.googleicon,
-                        onClickAction = { onGoogleSignUpClick() }
-                    )
-                }
+                modifier = Modifier
+                    .padding(top = 29.dp)
+                    .width(367.dp)
+                    .height(61.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+            ) {
+                Text(
+                    text = "Registrarse",
+                    color = ErizoHubTheme.Colors.primary,
+                    fontFamily = customFontFamily,
+                    fontSize = 20.sp
+                )
             }
+
+            // Divisor y botón de Google.
+            DividerLogin(modifier = Modifier.padding(top = 20.dp, bottom = 20.dp))
+            Column {
+                ButtonGoogle(
+                    text = "Continuar con Google",
+                    logoResId = R.drawable.googleicon,
+                    onClickAction = { onGoogleSignUpClick() }
+                )
+            }
+        }
     }
 }
